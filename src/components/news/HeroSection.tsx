@@ -11,7 +11,7 @@ export default function HeroSection({ articles }: { articles: any[] }) {
     return (
         <section className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-12">
             <div className="md:col-span-2">
-                <NewsCard article={mainArticle} size="large" />
+                <NewsCard article={mainArticle} size="large" priority={true} />
             </div>
             <div className="flex flex-col gap-6">
                 {sideArticles.map((article: any, i: number) => (

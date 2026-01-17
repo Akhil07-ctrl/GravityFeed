@@ -4,8 +4,9 @@ import NewsCard from '@/components/news/NewsCard';
 import InfiniteFeed from '@/components/news/InfiniteFeed';
 import { Suspense } from 'react';
 
-export default async function NewsFeed({ searchParams }: { searchParams: { category?: string } }) {
-    const category = searchParams.category || 'general';
+export default async function NewsFeed({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
+    const resolvedParams = await searchParams;
+    const category = resolvedParams.category || 'general';
 
     let articles = [];
     try {

@@ -51,19 +51,35 @@ export const authOptions: NextAuthOptions = {
     ],
     callbacks: {
         async signIn({ user, account }) {
-            if (account?.provider === 'google') {
-                await dbConnect();
-                const existingUser = await User.findOne({ email: user.email });
-                if (!existingUser) {
-                    await User.create({
-                        name: user.name,
-                        email: user.email,
-                        image: user.image,
-                        password: '', // No password for google users
-                    });
+            try {
+                if (account?.provider === 'google') {
+                    await dbConnect();
+                    const email = user.email;
+                    if (!email) return false;
+
+                    const existingUser = await User.findOne({ email });
+                    if (!existingUser) {
+                        await User.create({
+                            name: user.name || 'Google User',
+                            email: email,
+                            image: user.image || '',
+                            password: '', // No password for google users
+                        });
+                    }
                 }
+                return true;
+            } catch (error) {
+                console.error("Error in signIn callback:", error);
+                return false;
             }
-            return true;
+        },
+        async redirect({ url, baseUrl }) {
+            // After sign in, redirect to home page
+            if (url.startsWith(baseUrl)) {
+                return url;
+            }
+            // Default redirect to home
+            return baseUrl;
         },
         async session({ session, token }) {
             if (token && session.user) {

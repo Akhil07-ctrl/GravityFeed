@@ -16,7 +16,7 @@ interface Article {
     url: string;
 }
 
-export default function NewsCard({ article, size = 'medium' }: { article: Article; size?: 'small' | 'medium' | 'large' }) {
+export default function NewsCard({ article, size = 'medium', priority = false }: { article: Article; size?: 'small' | 'medium' | 'large'; priority?: boolean }) {
     if (!article) return null;
 
     const isLarge = size === 'large';
@@ -55,13 +55,15 @@ export default function NewsCard({ article, size = 'medium' }: { article: Articl
 
             <div className={`relative ${isLarge ? 'h-2/3' : isSmall ? 'w-24 h-24 shrink-0' : 'h-48'}`}>
                 <Image
-                    src={article.urlToImage || '/placeholder.jpg'}
+                    src={article.urlToImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'}
                     alt={article.title}
                     fill
+                    priority={priority}
+                    sizes={isLarge ? '(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px' : isSmall ? '100px' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px'}
                     className={`object-cover transition-transform duration-700 group-hover:scale-110 ${!isSmall && 'rounded-t-2xl'}`}
                     onError={(e) => {
                         // @ts-ignore
-                        e.target.src = 'https://via.placeholder.com/400x300?text=News';
+                        e.target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
                     }}
                 />
                 {isLarge && (
@@ -80,7 +82,7 @@ export default function NewsCard({ article, size = 'medium' }: { article: Articl
                 <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
                     <span>{article.source?.name}</span>
                     <span className="text-gray-400">•</span>
-                    <span className="text-gray-400">{new Date(article.publishedAt).toLocaleDateString()}</span>
+                    <span className="text-gray-400" suppressHydrationWarning>{new Date(article.publishedAt).toLocaleDateString()}</span>
                 </div>
                 <h3 className={`font-bold leading-tight group-hover:text-blue-500 transition-colors ${isLarge ? 'text-2xl mb-2 text-white group-hover:text-blue-300' : isSmall ? 'text-sm' : 'text-lg mb-2'}`}>
                     {article.title}

@@ -7,6 +7,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Globe, Layers, Zap } from 'lucide-react';
 import { signIn } from 'next-auth/react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
+import Footer from '@/components/layout/Footer';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -53,13 +54,13 @@ export default function WelcomePage() {
                     <ThemeToggle />
                     <button
                         onClick={() => signIn()}
-                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform cursor-pointer"
+                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
                     >
                         Log In
                     </button>
                     <button
                         onClick={() => signIn()}
-                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform cursor-pointer"
+                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
                     >
                         Get Started
                     </button>
@@ -195,24 +196,24 @@ export default function WelcomePage() {
                 <div className="mt-40 relative">
                     <div className="text-center mb-10">
                         <h2 className="text-3xl font-bold mb-4">Trending Stories</h2>
-                        <p className="text-gray-500">Log in to unlock full access</p>
+                        <p className="text-gray-500 dark:text-gray-400">Log in to unlock full access</p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-50 blur-sm select-none pointer-events-none">
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 opacity-40 blur-[2px] select-none pointer-events-none">
                         {[1, 2, 3, 4].map((n) => (
-                            <div key={n} className="bg-gray-200 dark:bg-gray-800 h-64 rounded-2xl animate-pulse" />
+                            <div key={n} className="bg-gray-300 dark:bg-gray-800 h-64 rounded-2xl animate-pulse" />
                         ))}
                         {[1, 2, 3, 4].map((n) => (
-                            <div key={`b-${n}`} className="bg-gray-200 dark:bg-gray-800 h-64 rounded-2xl animate-pulse" />
+                            <div key={`b-${n}`} className="bg-gray-300 dark:bg-gray-800 h-64 rounded-2xl animate-pulse" />
                         ))}
                     </div>
 
                     <div className="absolute inset-0 flex items-center justify-center z-20">
-                        <div className="bg-white/80 dark:bg-black/80 backdrop-blur-md p-8 rounded-3xl border border-white/10 text-center shadow-2xl">
+                        <div className="bg-white/95 dark:bg-black/90 backdrop-blur-lg p-8 rounded-3xl border border-gray-200 dark:border-gray-700 text-center shadow-2xl">
                             <p className="text-xl font-bold mb-4">Join Gravity Feed</p>
                             <button
                                 onClick={() => signIn()}
-                                className="px-6 py-3 bg-white dark:bg-white text-black rounded-full font-bold hover:scale-105 transition-transform cursor-pointer"
+                                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold hover:scale-105 transition-transform shadow-lg"
                             >
                                 Unlock All News
                             </button>
@@ -220,6 +221,7 @@ export default function WelcomePage() {
                     </div>
                 </div>
             </main>
+            <Footer />
         </div>
     );
 }

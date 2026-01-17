@@ -89,7 +89,7 @@ export default function RegisterPage() {
                 className="w-full max-w-md bg-white/80 dark:bg-gray-900/80 backdrop-blur-xl border border-gray-200 dark:border-gray-800 rounded-3xl shadow-2xl p-8 z-10"
             >
                 <div className="text-center mb-8">
-                    <Link href="/welcome" className="inline-block text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-2 cursor-pointer">
+                    <Link href="/welcome" className="inline-block text-3xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-2">
                         Gravity Feed
                     </Link>
                     <p className="text-gray-500 text-sm">Create your account to get started.</p>
@@ -98,7 +98,7 @@ export default function RegisterPage() {
                 <div className="space-y-4 mb-6">
                     <button
                         onClick={handleGoogleSignIn}
-                        className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors cursor-pointer"
+                        className="w-full flex items-center justify-center gap-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 font-medium py-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors"
                         type="button"
                     >
                         <svg className="w-5 h-5" viewBox="0 0 24 24">
@@ -175,14 +175,14 @@ export default function RegisterPage() {
                     <button
                         type="submit"
                         disabled={loading}
-                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02] cursor-pointer"
+                        className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl transition-all flex items-center justify-center gap-2 hover:scale-[1.02]"
                     >
                         {loading ? <Loader2 className="w-5 h-5 animate-spin" /> : <>Create Account <ArrowRight className="w-5 h-5" /></>}
                     </button>
                 </form>
 
                 <p className="text-center mt-6 text-sm text-gray-500">
-                    Already have an account? <Link href="/login" className="text-blue-600 hover:underline cursor-pointer">Sign in</Link>
+                    Already have an account? <Link href="/login" className="text-blue-600 hover:underline">Sign in</Link>
                 </p>
             </motion.div>
         </div>

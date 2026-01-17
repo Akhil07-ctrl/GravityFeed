@@ -33,7 +33,7 @@ export default function ArticlePage() {
 
     return (
         <div className="max-w-4xl mx-auto pb-20">
-            <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 mb-8 transition-colors cursor-pointer">
+            <Link href="/" className="inline-flex items-center gap-2 text-gray-500 hover:text-blue-600 dark:hover:text-blue-400 mb-8 transition-colors">
                 <ArrowLeft className="w-4 h-4" /> Back to Feed
             </Link>
 
@@ -44,13 +44,15 @@ export default function ArticlePage() {
             >
                 <div className="relative h-[400px] md:h-[500px] w-full">
                     <Image
-                        src={article.urlToImage || '/placeholder.jpg'}
+                        src={article.urlToImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'}
                         alt={article.title}
                         fill
+                        priority
+                        sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                         className="object-cover"
                         onError={(e) => {
                             // @ts-ignore
-                            e.target.src = 'https://via.placeholder.com/800x600?text=News';
+                            e.target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
                         }}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />

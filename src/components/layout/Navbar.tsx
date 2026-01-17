@@ -30,10 +30,10 @@ export default function Navbar() {
 
                 {/* Logo & Mobile Menu */}
                 <div className="flex items-center gap-4">
-                    <button className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full cursor-pointer">
+                    <button className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full">
                         <Menu className="w-5 h-5" />
                     </button>
-                    <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 cursor-pointer">
+                    <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                         Gravity
                     </Link>
                 </div>
@@ -44,7 +44,7 @@ export default function Navbar() {
                         <Link
                             key={cat}
                             href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
-                            className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap cursor-pointer"
+                            className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
                         >
                             {cat}
                         </Link>
@@ -66,14 +66,14 @@ export default function Navbar() {
 
                     <ThemeToggle />
 
-                    <button className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-full cursor-pointer">
+                    <button className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-full">
                         <Bell className="w-5 h-5" />
                     </button>
 
                     <div className="relative">
                         <button
                             onClick={() => setIsProfileOpen(!isProfileOpen)}
-                            className="flex items-center gap-2 p-1 pl-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all cursor-pointer"
+                            className="flex items-center gap-2 p-1 pl-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
                         >
                             <span className="text-sm font-medium hidden sm:block max-w-[100px] truncate">
                                 {session?.user?.name || 'User'}
@@ -99,12 +99,12 @@ export default function Navbar() {
                                         <p className="text-sm font-bold">{session?.user?.name}</p>
                                         <p className="text-xs text-gray-500 truncate">{session?.user?.email}</p>
                                     </div>
-                                    <Link href="/bookmarks" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 cursor-pointer">
+                                    <Link href="/bookmarks" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                                         <span className="w-4 h-4">🔖</span> Bookmarks
                                     </Link>
                                     <button
                                         onClick={() => signOut({ callbackUrl: '/welcome' })}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20 cursor-pointer"
+                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
                                         <LogOut className="w-4 h-4" /> Sign Out
                                     </button>
