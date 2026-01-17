@@ -23,7 +23,7 @@ export default async function NewsFeed({ searchParams }: { searchParams: { categ
                 <span className="text-sm text-gray-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
 
-            <Suspense fallback={<div className="h-96 bg-gray-100 rounded-2xl animate-pulse" />}>
+            <Suspense fallback={<div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />}>
                 <HeroSection articles={articles} />
             </Suspense>
 
@@ -58,7 +58,7 @@ async function CategoryRow({ category }: { category: string }) {
                     <span className="w-1 h-6 bg-blue-600 rounded-full" />
                     {category}
                 </h2>
-                <a href={`/?category=${category.toLowerCase()}`} className="text-sm font-medium text-blue-600 hover:text-blue-700">View All</a>
+                <a href={`/?category=${category.toLowerCase()}`} className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">View All</a>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {articles.map((article: any, i: number) => (

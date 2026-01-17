@@ -1,4 +1,5 @@
 'use client';
+
 import NewsCard from './NewsCard';
 
 export default function HeroSection({ articles }: { articles: any[] }) {

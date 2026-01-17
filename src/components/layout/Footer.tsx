@@ -14,15 +14,15 @@ export default function Footer() {
                 {['Company', 'Resources', 'Legal'].map((col) => (
                     <div key={col}>
                         <h4 className="font-bold mb-4">{col}</h4>
-                        <ul className="space-y-2 text-sm text-gray-500">
+                        <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
                             {[1, 2, 3].map((i) => (
-                                <li key={i}><a href="#" className="hover:text-blue-600">Link Item {i}</a></li>
+                                <li key={i}><a href="#" className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors">Link Item {i}</a></li>
                             ))}
                         </ul>
                     </div>
                 ))}
             </div>
-            <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-gray-100 dark:border-gray-900 text-center text-sm text-gray-400">
+            <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-400">
                 © {new Date().getFullYear()} Gravity Feed. All rights reserved.
             </div>
         </footer>

@@ -4,9 +4,9 @@ import { useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
-import Link from 'next/link';
 import { ArrowRight, Globe, Layers, Zap } from 'lucide-react';
 import { signIn } from 'next-auth/react';
+import { ThemeToggle } from '@/components/layout/ThemeToggle';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -49,16 +49,17 @@ export default function WelcomePage() {
                 <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                     Gravity Feed
                 </div>
-                <div className="flex gap-4">
+                <div className="flex items-center gap-4">
+                    <ThemeToggle />
                     <button
                         onClick={() => signIn()}
-                        className="px-4 py-2 text-sm font-medium hover:text-blue-600 transition-colors"
+                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform cursor-pointer"
                     >
                         Log In
                     </button>
                     <button
                         onClick={() => signIn()}
-                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
+                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform cursor-pointer"
                     >
                         Get Started
                     </button>
@@ -129,6 +130,67 @@ export default function WelcomePage() {
                     ))}
                 </div>
 
+                {/* How It Works Section */}
+                <div className="mt-40">
+                    <div className="text-center mb-16">
+                        <h2 className="text-4xl font-bold mb-4">How It Works</h2>
+                        <p className="text-gray-500">Get started in three simple steps</p>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        {[
+                            {
+                                step: "01",
+                                title: "Create Your Account",
+                                desc: "Sign up with Google or email in seconds. No credit card required."
+                            },
+                            {
+                                step: "02",
+                                title: "Personalize Your Feed",
+                                desc: "Select your interests and favorite topics. Our AI learns from your reading habits."
+                            },
+                            {
+                                step: "03",
+                                title: "Stay Informed",
+                                desc: "Get real-time updates, save articles, and discover stories that matter to you."
+                            }
+                        ].map((item, i) => (
+                            <div key={i} className="relative">
+                                <div className="text-6xl font-bold text-blue-600/10 dark:text-blue-400/10 mb-4">{item.step}</div>
+                                <h3 className="text-2xl font-bold mb-3">{item.title}</h3>
+                                <p className="text-gray-600 dark:text-gray-400 leading-relaxed">
+                                    {item.desc}
+                                </p>
+                                {i < 2 && (
+                                    <div className="hidden md:block absolute top-8 -right-4 w-8 h-8">
+                                        <ArrowRight className="w-full h-full text-blue-600/30" />
+                                    </div>
+                                )}
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                {/* Statistics Section */}
+                <div className="mt-40">
+                    <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-3xl p-12 text-white text-center">
+                        <h2 className="text-4xl font-bold mb-12">Trusted by Readers Worldwide</h2>
+                        <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
+                            {[
+                                { value: "10K+", label: "Active Users" },
+                                { value: "500+", label: "News Sources" },
+                                { value: "1M+", label: "Articles Read" },
+                                { value: "50+", label: "Countries" }
+                            ].map((stat, i) => (
+                                <div key={i} className="space-y-2">
+                                    <div className="text-5xl font-bold">{stat.value}</div>
+                                    <div className="text-blue-100 text-sm font-medium">{stat.label}</div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                </div>
+
                 {/* Preview Section - Locked/Blurred */}
                 <div className="mt-40 relative">
                     <div className="text-center mb-10">
@@ -150,7 +212,7 @@ export default function WelcomePage() {
                             <p className="text-xl font-bold mb-4">Join Gravity Feed</p>
                             <button
                                 onClick={() => signIn()}
-                                className="px-6 py-3 bg-white dark:bg-white text-black rounded-full font-bold hover:scale-105 transition-transform"
+                                className="px-6 py-3 bg-white dark:bg-white text-black rounded-full font-bold hover:scale-105 transition-transform cursor-pointer"
                             >
                                 Unlock All News
                             </button>
