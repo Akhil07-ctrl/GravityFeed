@@ -4,7 +4,7 @@ import dbConnect from '@/lib/db';
 import Bookmark from '@/models/Bookmark';
 import { NextResponse } from 'next/server';
 
-export async function GET(req: Request) {
+export async function GET() {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
@@ -43,8 +43,9 @@ export async function POST(req: Request) {
         });
 
         return NextResponse.json(newBookmark);
-    } catch (err: any) {
-        if (err.code === 11000) {
+    } catch (err: unknown) {
+        const error = err as { code?: number };
+        if (error.code === 11000) {
             return NextResponse.json({ error: 'Already bookmarked' }, { status: 409 });
         }
         return NextResponse.json({ error: 'Server error' }, { status: 500 });

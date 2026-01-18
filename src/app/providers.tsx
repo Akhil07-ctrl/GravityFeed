@@ -4,6 +4,7 @@ import { SessionProvider } from 'next-auth/react';
 import { ReactNode, useEffect } from 'react';
 import Lenis from 'lenis';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
+import { ToastProvider } from '@/components/ui/Toast';
 
 export const Providers = ({ children }: { children: ReactNode }) => {
     useEffect(() => {
@@ -25,7 +26,9 @@ export const Providers = ({ children }: { children: ReactNode }) => {
     return (
         <SessionProvider>
             <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
-                {children}
+                <ToastProvider>
+                    {children}
+                </ToastProvider>
             </NextThemesProvider>
         </SessionProvider>
     );

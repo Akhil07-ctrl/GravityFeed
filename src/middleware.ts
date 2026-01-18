@@ -2,16 +2,22 @@ import { withAuth } from "next-auth/middleware"
 import { NextResponse } from "next/server"
 
 export default withAuth(
-    function middleware(req) {
+    function middleware() {
         // Custom logic if needed
         return NextResponse.next()
     },
     {
         callbacks: {
-            authorized: ({ token }) => !!token,
+            authorized: ({ token }) => {
+                // If there's a token, the user is authorized
+                if (token) return true;
+
+                // If not authorized, NextAuth will redirect based on the pages config
+                return false;
+            },
         },
         pages: {
-            signIn: '/login', // Consistent with authOptions
+            signIn: '/welcome', // Redirect unauthenticated users to welcome page
         },
     }
 )

@@ -55,7 +55,10 @@ export const authOptions: NextAuthOptions = {
                 if (account?.provider === 'google') {
                     await dbConnect();
                     const email = user.email;
-                    if (!email) return false;
+                    if (!email) {
+                        console.error("No email found in google profile");
+                        return false;
+                    }
 
                     const existingUser = await User.findOne({ email });
                     if (!existingUser) {
@@ -65,6 +68,7 @@ export const authOptions: NextAuthOptions = {
                             image: user.image || '',
                             password: '', // No password for google users
                         });
+                        console.log("New Google user created:", email);
                     }
                 }
                 return true;
@@ -83,13 +87,22 @@ export const authOptions: NextAuthOptions = {
         },
         async session({ session, token }) {
             if (token && session.user) {
-                session.user.id = token.sub as string;
+                session.user.id = token.id as string;
             }
             return session;
         },
-        async jwt({ token, user }) {
-            if (user) {
-                token.sub = user.id;
+        async jwt({ token, user, account }) {
+            // For OAuth providers (like Google), fetch the MongoDB user by email
+            // to get the correct _id
+            if (account?.provider === 'google' && token.email) {
+                await dbConnect();
+                const dbUser = await User.findOne({ email: token.email });
+                if (dbUser) {
+                    token.id = dbUser._id.toString();
+                }
+            } else if (user) {
+                // For credentials provider or when user object exists
+                token.id = user.id;
             }
             return token;
         }

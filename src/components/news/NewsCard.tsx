@@ -5,7 +5,8 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Bookmark as BookmarkIcon } from 'lucide-react';
 import { toggleBookmark } from '@/actions/bookmark.actions';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import { useToast } from '@/components/ui/Toast';
 
 interface Article {
     title: string;
@@ -16,19 +17,46 @@ interface Article {
     url: string;
 }
 
-export default function NewsCard({ article, size = 'medium', priority = false }: { article: Article; size?: 'small' | 'medium' | 'large'; priority?: boolean }) {
-    if (!article) return null;
-
+export default function NewsCard({
+    article,
+    size = 'medium',
+    priority = false,
+    isBookmarkedInitially = false
+}: {
+    article: Article;
+    size?: 'small' | 'medium' | 'large';
+    priority?: boolean;
+    isBookmarkedInitially?: boolean;
+}) {
+    const { showToast } = useToast();
     const isLarge = size === 'large';
     const isSmall = size === 'small';
-    const [isBookmarked, setIsBookmarked] = useState(false);
+    const [isBookmarked, setIsBookmarked] = useState(isBookmarkedInitially);
+
+    // Sync state if prop changes (e.g. server re-fetch)
+    useEffect(() => {
+        setIsBookmarked(isBookmarkedInitially);
+    }, [isBookmarkedInitially]);
+
+    if (!article) return null;
 
     const handleBookmark = async (e: React.MouseEvent) => {
         e.preventDefault();
         e.stopPropagation();
+
         const res = await toggleBookmark(article);
+
+        if (res && res.error) {
+            showToast(res.error, 'error');
+            return;
+        }
+
         if (res && res.isBookmarked !== undefined) {
             setIsBookmarked(res.isBookmarked);
+            showToast(
+                res.isBookmarked ? 'Added to Bookmarks' : 'Removed from Bookmarks',
+                'success'
+            );
         }
     };
 
@@ -40,7 +68,7 @@ export default function NewsCard({ article, size = 'medium', priority = false }:
         source: article.source?.name || '',
         date: article.publishedAt || '',
         url: article.url || '', // Original URL for "Read More"
-        content: (article as any).content || ''
+        content: (article as unknown as { content?: string }).content || ''
     });
 
     const articleHref = `/article?${params.toString()}`;
@@ -62,7 +90,7 @@ export default function NewsCard({ article, size = 'medium', priority = false }:
                     sizes={isLarge ? '(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px' : isSmall ? '100px' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px'}
                     className={`object-cover transition-transform duration-700 group-hover:scale-110 ${!isSmall && 'rounded-t-2xl'}`}
                     onError={(e) => {
-                        // @ts-ignore
+                        // @ts-expect-error - Image element type mismatch
                         e.target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
                     }}
                 />

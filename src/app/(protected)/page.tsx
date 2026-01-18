@@ -3,18 +3,42 @@ import HeroSection from '@/components/news/HeroSection';
 import NewsCard from '@/components/news/NewsCard';
 import InfiniteFeed from '@/components/news/InfiniteFeed';
 import { Suspense } from 'react';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
+import dbConnect from '@/lib/db';
+import Bookmark from '@/models/Bookmark';
 
 export default async function NewsFeed({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
     const resolvedParams = await searchParams;
     const category = resolvedParams.category || 'general';
+    const session = await getServerSession(authOptions);
 
     let articles = [];
+    let bookmarkedUrls: string[] = [];
+
     try {
         const data = await getTopHeadlines(category);
         articles = data.articles || [];
+
+        if (session?.user?.id) {
+            try {
+                await dbConnect();
+                // Ensure id is a valid ObjectId before querying
+                const isValidId = /^[0-9a-fA-F]{24}$/.test(session.user.id);
+                if (isValidId) {
+                    const bookmarks = await Bookmark.find({ userId: session.user.id })
+                        .select('articleUrl')
+                        .lean();
+                    bookmarkedUrls = bookmarks.map(b => (b as any).articleUrl);
+                } else {
+                    console.warn("Invalid session user id format:", session.user.id);
+                }
+            } catch (err) {
+                console.error("Error fetching bookmarks:", err);
+            }
+        }
     } catch (error) {
-        console.error("Failed to fetch news", error);
-        // Fallback or empty state
+        console.error("Failed to fetch news or bookmarks", error);
     }
 
     return (
@@ -25,14 +49,14 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
             </div>
 
             <Suspense fallback={<div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />}>
-                <HeroSection articles={articles} />
+                <HeroSection articles={articles} bookmarkedUrls={bookmarkedUrls} />
             </Suspense>
 
             {/* Rows for specific categories if on home */}
             {category === 'general' && (
                 <div className="space-y-12">
                     {['Technology', 'Business', 'Sports', 'Entertainment'].map((cat) => (
-                        <CategoryRow key={cat} category={cat} />
+                        <CategoryRow key={cat} category={cat} bookmarkedUrls={bookmarkedUrls} />
                     ))}
                     <InfiniteFeed />
                 </div>
@@ -41,12 +65,12 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
     );
 }
 
-async function CategoryRow({ category }: { category: string }) {
+async function CategoryRow({ category, bookmarkedUrls = [] }: { category: string, bookmarkedUrls?: string[] }) {
     let articles = [];
     try {
         const data = await getTopHeadlines(category.toLowerCase(), 'us', 4);
         articles = data.articles || [];
-    } catch (e) {
+    } catch {
         return null;
     }
 
@@ -63,7 +87,11 @@ async function CategoryRow({ category }: { category: string }) {
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {articles.map((article: any, i: number) => (
-                    <NewsCard key={i} article={article} />
+                    <NewsCard
+                        key={i}
+                        article={article}
+                        isBookmarkedInitially={bookmarkedUrls.includes(article.url)}
+                    />
                 ))}
             </div>
         </section>

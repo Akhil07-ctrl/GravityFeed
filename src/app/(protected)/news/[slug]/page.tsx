@@ -51,7 +51,7 @@ export default function ArticlePage() {
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                         className="object-cover"
                         onError={(e) => {
-                            // @ts-ignore
+                            // @ts-expect-error - Image element type mismatch
                             e.target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
                         }}
                     />
@@ -94,7 +94,7 @@ export default function ArticlePage() {
                                 {article.content ? (
                                     <p>{article.content.replace(/\[\+\d+ chars\]/, '')}...</p>
                                 ) : (
-                                    <p>Read the full story on the original publication's website to get all the details/analysis...</p>
+                                    <p>Read the full story on the original publication&apos;s website to get all the details/analysis...</p>
                                 )}
                             </div>
 

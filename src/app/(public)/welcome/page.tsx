@@ -5,9 +5,9 @@ import { motion } from 'framer-motion';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Globe, Layers, Zap } from 'lucide-react';
-import { signIn } from 'next-auth/react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import Footer from '@/components/layout/Footer';
+import Link from 'next/link';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -41,36 +41,41 @@ export default function WelcomePage() {
     }, []);
 
     return (
-        <div ref={containerRef} className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 overflow-hidden relative">
-            <div className="absolute inset-0 z-0">
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl opacity-50" />
-            </div>
-
-            <nav className="relative z-10 flex items-center justify-between px-6 py-6 max-w-7xl mx-auto">
-                <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                    Gravity Feed
-                </div>
-                <div className="flex items-center gap-4">
-                    <ThemeToggle />
-                    <button
-                        onClick={() => signIn()}
-                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
-                    >
-                        Log In
-                    </button>
-                    <button
-                        onClick={() => signIn()}
-                        className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
-                    >
-                        Get Started
-                    </button>
+        <>
+            <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-6 bg-gray-50/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
+                <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
+                    <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                        Gravity Feed
+                    </div>
+                    <div className="flex items-center gap-4">
+                        <ThemeToggle />
+                        <Link
+                            href="/login"
+                            className="px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
+                            prefetch={true}
+                        >
+                            Log In
+                        </Link>
+                        <Link
+                            href="/register"
+                            className="hidden sm:block px-4 py-2 text-sm font-medium bg-gray-900 dark:bg-white text-white dark:text-black rounded-full hover:scale-105 transition-transform"
+                            prefetch={true}
+                        >
+                            Get Started
+                        </Link>
+                    </div>
                 </div>
             </nav>
 
-            <main className="relative z-10 pt-20 pb-32 px-6 max-w-7xl mx-auto">
+            <div ref={containerRef} className="min-h-screen bg-gray-50 dark:bg-black text-gray-900 dark:text-gray-100 relative">
+                <div className="absolute inset-0 z-0">
+                    <div className="absolute inset-0 bg-gradient-to-br from-blue-500/10 via-purple-500/10 to-pink-500/10 blur-3xl opacity-50" />
+                </div>
+
+                <main className="relative z-10 pt-20 pb-32 px-6 max-w-7xl mx-auto">
                 <div className="text-center max-w-3xl mx-auto mb-20">
                     <h1 ref={textRef} className="text-5xl md:text-7xl font-bold tracking-tight mb-6 leading-tight">
-                        The World's Pulse, <br />
+                        The World&apos;s Pulse, <br />
                         <span className="bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
                             Personalized for You.
                         </span>
@@ -90,13 +95,14 @@ export default function WelcomePage() {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: 0.6 }}
                     >
-                        <button
-                            onClick={() => signIn()}
+                        <Link
+                            href="/login"
                             className="group inline-flex items-center gap-2 px-8 py-4 bg-blue-600 text-white rounded-full text-lg font-semibold hover:bg-blue-700 transition-all hover:scale-105 shadow-lg shadow-blue-600/20"
+                            prefetch={true}
                         >
                             Start Reading
                             <ArrowRight className="w-5 h-5 group-hover:translate-x-1 transition-transform" />
-                        </button>
+                        </Link>
                     </motion.div>
                 </div>
 
@@ -211,17 +217,19 @@ export default function WelcomePage() {
                     <div className="absolute inset-0 flex items-center justify-center z-20">
                         <div className="bg-white/95 dark:bg-black/90 backdrop-blur-lg p-8 rounded-3xl border border-gray-200 dark:border-gray-700 text-center shadow-2xl">
                             <p className="text-xl font-bold mb-4">Join Gravity Feed</p>
-                            <button
-                                onClick={() => signIn()}
+                            <Link
+                                href="/login"
                                 className="px-6 py-3 bg-gradient-to-r from-blue-600 to-purple-600 text-white rounded-full font-bold hover:scale-105 transition-transform shadow-lg"
+                                prefetch={true}
                             >
                                 Unlock All News
-                            </button>
+                            </Link>
                         </div>
                     </div>
                 </div>
             </main>
+            </div>
             <Footer />
-        </div>
+        </>
     );
 }

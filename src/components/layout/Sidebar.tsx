@@ -2,11 +2,9 @@
 
 import { CloudSun, TrendingUp, ExternalLink } from 'lucide-react';
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useEffect, useState, useRef } from 'react';
 
 export default function Sidebar() {
-    const router = useRouter();
     const [weather, setWeather] = useState<{
         temp: number;
         condition: string;
@@ -23,9 +21,10 @@ export default function Sidebar() {
 
     useEffect(() => {
         if (!navigator.geolocation) {
-            setWeather(prev => ({ ...prev, loading: false }));
             return;
         }
+
+        let isMounted = true;
 
         const fetchWeather = async (lat: number, lon: number) => {
             try {
@@ -48,16 +47,20 @@ export default function Sidebar() {
                 if (code >= 70 && code < 80) condition = 'Snowy';
                 if (code >= 80) condition = 'Stormy';
 
-                setWeather({
-                    temp: Math.round(weatherData.current_weather.temperature),
-                    condition,
-                    city,
-                    isDay: weatherData.current_weather.is_day === 1,
-                    loading: false
-                });
+                if (isMounted) {
+                    setWeather({
+                        temp: Math.round(weatherData.current_weather.temperature),
+                        condition,
+                        city,
+                        isDay: weatherData.current_weather.is_day === 1,
+                        loading: false
+                    });
+                }
             } catch (error) {
                 console.error("Weather fetch failed", error);
-                setWeather(prev => ({ ...prev, loading: false }));
+                if (isMounted) {
+                    setWeather(prev => ({ ...prev, loading: false }));
+                }
             }
         };
 
@@ -66,9 +69,15 @@ export default function Sidebar() {
                 fetchWeather(position.coords.latitude, position.coords.longitude);
             },
             () => {
-                setWeather(prev => ({ ...prev, loading: false }));
+                if (isMounted) {
+                    setWeather(prev => ({ ...prev, loading: false }));
+                }
             }
         );
+
+        return () => {
+            isMounted = false;
+        };
     }, []);
 
     const sidebarRef = useRef<HTMLElement>(null);
@@ -106,10 +115,6 @@ export default function Sidebar() {
         window.addEventListener('scroll', handleScroll, { passive: true });
         return () => window.removeEventListener('scroll', handleScroll);
     }, []);
-
-    const handleCategoryClick = (category: string) => {
-        router.push(`/?category=${category.toLowerCase()}`);
-    };
 
     return (
         <aside
@@ -164,13 +169,13 @@ export default function Sidebar() {
                         { tag: 'Science', posts: '6k' }
                     ].map((item, i) => (
                         <li key={i}>
-                            <button
-                                onClick={() => handleCategoryClick(item.tag)}
+                            <Link
+                                href={`/?category=${item.tag.toLowerCase()}`}
                                 className="group block w-full text-left"
                             >
                                 <span className="font-medium group-hover:text-blue-600 transition-colors">#{item.tag}</span>
                                 <p className="text-xs text-gray-500">{item.posts} posts</p>
-                            </button>
+                            </Link>
                         </li>
                     ))}
                 </ul>

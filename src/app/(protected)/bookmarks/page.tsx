@@ -4,8 +4,18 @@ import { useEffect, useState } from 'react';
 import NewsCard from '@/components/news/NewsCard';
 import { Loader2 } from 'lucide-react';
 
+interface Bookmark {
+    _id: string;
+    articleUrl: string;
+    title: string;
+    description: string;
+    urlToImage: string;
+    source: string;
+    publishedAt: string;
+}
+
 export default function BookmarksPage() {
-    const [bookmarks, setBookmarks] = useState<any[]>([]);
+    const [bookmarks, setBookmarks] = useState<Bookmark[]>([]);
     const [loading, setLoading] = useState(true);
 
     useEffect(() => {
@@ -33,7 +43,7 @@ export default function BookmarksPage() {
 
             {bookmarks.length === 0 ? (
                 <div className="text-center py-20 text-gray-500">
-                    You haven't saved any articles yet.
+                    You haven&apos;t saved any articles yet.
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

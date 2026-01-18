@@ -1,36 +1,107 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# 🌌 GravityFeed
 
-## Getting Started
+**GravityFeed** is a modern, high-performance news aggregation platform designed to keep you informed with clarity and style. Featuring a premium user interface with smooth animations, it brings the world's pulse directly to your screen.
 
-First, run the development server:
+---
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+## ✨ Features
+
+- 🌍 **Global Coverage**: Access breaking news and top stories from thousands of reputable publishers worldwide.
+- 🎯 **Personalized Feed**: A tailored news experience that focuses on your interests to show you stories that matter most.
+- ⚡ **Instant Updates**: Real-time news alerts ensuring you're always ahead of the curve.
+- 🔖 **Bookmarking**: Save articles for later reading with a dedicated bookmarks gallery. (Requires login)
+- 🔐 **Secure Authentication**: Traditional Email/Password registration and Google OAuth integration using **NextAuth**.
+- 🌓 **Dynamic Themes**: Seamless transitions between light and dark modes for a comfortable reading experience.
+- 🎭 **Premium UI**: Fluid animations powered by **GSAP** and **Framer Motion** for a high-end feel.
+
+---
+
+## 🚀 Tech Stack
+
+- **Frontend**: [Next.js 15](https://nextjs.org/) (App Router), [React 19](https://react.dev/), [Tailwind CSS](https://tailwindcss.com/)
+- **Animations**: [GSAP](https://greensock.com/gsap/), [Framer Motion](https://www.framer.com/motion/), [Lenis](https://lenis.darkroom.engineering/) (Smooth Scroll)
+- **Backend & Auth**: [NextAuth.js](https://next-auth.js.org/), [Mongoose (MongoDB)](https://mongoosejs.com/)
+- **Icons**: [Lucide React](https://lucide.dev/), [React Icons](https://react-icons.github.io/react-icons/)
+- **Fonts**: [Geist](https://vercel.com/font)
+
+---
+
+## 🛠️ Getting Started
+
+### Prerequisites
+
+- Node.js 18+ 
+- MongoDB instance (Local or Atlas)
+- News API Key (from [newsapi.org](https://newsapi.org/))
+- Google OAuth Credentials (for social login)
+
+### Local Setup
+
+1. **Clone the repository:**
+   ```bash
+   git clone https://github.com/Akhil07-ctrl/GravityFeed.git
+   cd gravity-feed
+   ```
+
+2. **Install dependencies:**
+   ```bash
+   npm install
+   ```
+
+3. **Configure Environment Variables:**
+   Copy the example environment file and fill in your actual credentials:
+   ```bash
+   cp .env.example .env.local
+   ```
+   
+   Open `.env.local` and add your keys:
+   ```env
+   # Database
+   MONGODB_URI=your_mongodb_uri
+   
+   # Auth
+   NEXTAUTH_URL=http://localhost:3000
+   NEXTAUTH_SECRET=your_nextauth_secret
+   GOOGLE_CLIENT_ID=your_google_client_id
+   GOOGLE_CLIENT_SECRET=your_google_client_secret
+   
+   # API Keys
+   NEWS_API_KEY=your_news_api_key
+   ```
+
+   > [!NOTE]
+   > We use `.env.local` because it is specifically designed for local development secrets and is automatically ignored by Git. In Next.js, server-side variables are hidden from the browser by default unless prefixed with `NEXT_PUBLIC_`.
+
+4. **Run the development server:**
+   ```bash
+   npm run dev
+   ```
+
+5. **Open the app:**
+   Navigate to [http://localhost:3000](http://localhost:3000) in your browser.
+
+---
+
+## 📁 Project Structure
+
+```text
+src/
+├── actions/      # Server Actions for data mutations
+├── app/          # Next.js App Router (Pages, Layouts, API routes)
+├── components/   # Reusable UI components
+├── hooks/        # Custom React hooks
+├── lib/          # Utilities, API clients, and shared logic
+├── models/       # Mongoose schemas/models
+├── types/        # TypeScript interfaces/types
+└── utils/        # Helper functions
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## 📄 License
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+Developed with ❤️ by [Akhil](https://github.com/Akhil07-ctrl)

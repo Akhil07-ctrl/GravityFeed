@@ -15,10 +15,10 @@ export const getTopHeadlines = async (category: string = 'general', country: str
     return res.json();
 };
 
-export const getEverything = async (query: string, pageSize: number = 20) => {
+export const getEverything = async (query: string, pageSize: number = 20, page: number = 1) => {
     if (!NEWS_API_KEY) throw new Error('NEWS_API_KEY is not defined');
 
-    const res = await fetch(`${BASE_URL}/everything?q=${query}&pageSize=${pageSize}&apiKey=${NEWS_API_KEY}`, {
+    const res = await fetch(`${BASE_URL}/everything?q=${query}&pageSize=${pageSize}&page=${page}&apiKey=${NEWS_API_KEY}`, {
         next: { revalidate: 3600 }
     });
 

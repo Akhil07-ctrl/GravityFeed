@@ -32,7 +32,7 @@ export default function LoginPage() {
                 router.push('/');
                 router.refresh();
             }
-        } catch (err) {
+        } catch {
             setError('Something went wrong');
         } finally {
             setLoading(false);
@@ -126,7 +126,7 @@ export default function LoginPage() {
                 </form>
 
                 <p className="text-center mt-6 text-sm text-gray-500">
-                    Don't have an account? <Link href="/register" className="text-blue-600 hover:underline">Sign up</Link>
+                    Don&apos;t have an account? <Link href="/register" className="text-blue-600 hover:underline">Sign up</Link>
                 </p>
             </motion.div>
         </div>

@@ -10,16 +10,15 @@ export async function GET(req: Request) {
 
     try {
         let data;
+        const pageNum = parseInt(page);
         if (type === 'everything') {
-            data = await getEverything(query, 20); // Pagination support needed in lib if used
+            data = await getEverything(query, 20, pageNum);
         } else {
-            // We need to support page in getTopHeadlines
-            // For now, let's just fetch default
-            data = await getTopHeadlines(category, 'us', 20);
+            data = await getTopHeadlines(category, 'us', 20, pageNum);
         }
 
         return NextResponse.json(data);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: 'Failed to fetch' }, { status: 500 });
     }
 }

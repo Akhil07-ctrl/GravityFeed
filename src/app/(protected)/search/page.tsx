@@ -6,30 +6,55 @@ import NewsCard from '@/components/news/NewsCard';
 import { Loader2, SearchX } from 'lucide-react';
 import { getEverything } from '@/lib/newsApi';
 
+interface Article {
+    title: string;
+    description: string;
+    urlToImage: string;
+    source: { name: string };
+    publishedAt: string;
+    url: string;
+}
+
 export default function SearchPage() {
     const searchParams = useSearchParams();
     const query = searchParams.get('q') || '';
-    const [articles, setArticles] = useState<any[]>([]);
+    const [articles, setArticles] = useState<Article[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState('');
 
     useEffect(() => {
         if (!query) {
-            setLoading(false);
+            setArticles([]);
             return;
         }
 
-        setLoading(true);
-        getEverything(query)
-            .then((data) => {
-                setArticles(data.articles || []);
-                setLoading(false);
-            })
-            .catch((err) => {
-                console.error(err);
-                setError('Failed to fetch search results');
-                setLoading(false);
-            });
+        let isMounted = true;
+
+        const fetchArticles = async () => {
+            try {
+                const data = await getEverything(query);
+                if (isMounted) {
+                    setArticles(data.articles || []);
+                    setError('');
+                }
+            } catch (err) {
+                if (isMounted) {
+                    console.error(err);
+                    setError('Failed to fetch search results');
+                    setArticles([]);
+                }
+            } finally {
+                if (isMounted) {
+                    setLoading(false);
+                }
+            }
+        };
+
+        fetchArticles();
+
+        return () => {
+            isMounted = false;
+        };
     }, [query]);
 
     if (loading) {
@@ -66,7 +91,7 @@ export default function SearchPage() {
             <div>
                 <h1 className="text-3xl font-bold mb-2">Search Results</h1>
                 <p className="text-gray-500">
-                    Found {articles.length} results for "<span className="text-blue-600 font-medium">{query}</span>"
+                    Found {articles.length} results for &quot;<span className="text-blue-600 font-medium">{query}</span>&quot;
                 </p>
             </div>
 
@@ -78,7 +103,7 @@ export default function SearchPage() {
                 </div>
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-                    {articles.map((article: any, i: number) => (
+                    {articles.map((article: Article, i: number) => (
                         <NewsCard key={i} article={article} />
                     ))}
                 </div>
