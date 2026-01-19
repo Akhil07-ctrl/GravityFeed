@@ -16,6 +16,9 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Gravity Feed | Personalized News",
   description: "The world's pulse, personalized for you.",
+  icons: {
+    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230099ff'/><circle cx='50' cy='50' r='35' fill='%23006bb3'/><path d='M30 50 Q50 30 70 50 Q50 70 30 50' fill='%00ccff'/></svg>",
+  },
 };
 
 export default function RootLayout({

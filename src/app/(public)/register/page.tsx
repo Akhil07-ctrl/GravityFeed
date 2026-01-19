@@ -53,16 +53,16 @@ export default function RegisterPage() {
             // Auto sign in after registration
             const signInRes = await signIn('credentials', {
                 email,
-                password,
+                password, // Use original plain password for sign in
                 redirect: false,
             });
 
-            if (signInRes?.error) {
-                setError('Registration successful but sign in failed');
-                router.push('/login');
-            } else {
+            if (signInRes?.ok) {
                 router.push('/');
                 router.refresh();
+            } else {
+                setError('Registration successful but sign in failed. Please log in manually.');
+                router.push('/login');
             }
         } catch {
             setError('Something went wrong');

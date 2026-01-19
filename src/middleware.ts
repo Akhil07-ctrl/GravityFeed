@@ -26,7 +26,7 @@ export const config = {
     matcher: [
         /*
          * Match all request paths except for the ones starting with:
-         * - api/auth (auth API routes)
+         * - api (all API routes including auth)
          * - welcome (public welcome page)
          * - login (custom login page)
          * - register (custom register page)
@@ -35,7 +35,7 @@ export const config = {
          * - favicon.ico (favicon file)
          * - public images/assets
          */
-        '/((?!api/auth|welcome|login|register|_next/static|_next/image|favicon.ico).*)',
+        '/((?!api|welcome|login|register|_next/static|_next/image|favicon.ico|public).*)',
     ],
 }
 
