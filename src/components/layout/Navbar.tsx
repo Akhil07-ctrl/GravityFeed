@@ -17,6 +17,15 @@ interface SearchSuggestion {
     query: string;
 }
 
+const SEARCH_PLACEHOLDERS = [
+    'Search news...',
+    'Find breaking news...',
+    'Explore stories...',
+    'Discover headlines...',
+    'Search by topic...',
+    'Find trending topics...',
+];
+
 export default function Navbar() {
     const { data: session } = useSession();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
@@ -26,10 +35,12 @@ export default function Navbar() {
     const [isLoadingSuggestions, setIsLoadingSuggestions] = useState(false);
     const [showSuggestions, setShowSuggestions] = useState(false);
     const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
+    const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
     const router = useRouter();
     const searchInputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const placeholderTimerRef = useRef<NodeJS.Timeout | null>(null);
 
     const handleSearch = (e: React.FormEvent | string) => {
         if (typeof e === 'string') {
@@ -171,6 +182,19 @@ export default function Navbar() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Rotate search placeholder
+    useEffect(() => {
+        placeholderTimerRef.current = setInterval(() => {
+            setCurrentPlaceholderIndex((prev) => (prev + 1) % SEARCH_PLACEHOLDERS.length);
+        }, 3000); // Change placeholder every 3 seconds
+
+        return () => {
+            if (placeholderTimerRef.current) {
+                clearInterval(placeholderTimerRef.current);
+            }
+        };
+    }, []);
+
     const handleMobileMenuItemClick = () => {
         setIsMobileMenuOpen(false);
     };
@@ -222,7 +246,7 @@ export default function Navbar() {
                                 onChange={handleSearchInputChange}
                                 onKeyDown={handleKeyDown}
                                 onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
-                                placeholder="Search news..."
+                                placeholder={SEARCH_PLACEHOLDERS[currentPlaceholderIndex]}
                                 className="pl-9 pr-10 py-2 text-sm bg-gray-100 dark:bg-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 transition-all focus:w-64"
                                 autoComplete="off"
                             />

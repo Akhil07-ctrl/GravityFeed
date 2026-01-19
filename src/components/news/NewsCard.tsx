@@ -61,6 +61,13 @@ export default function NewsCard({
     };
 
     // Construct internal URL with query params
+    const slug = encodeURIComponent(
+        article.title
+            ?.toLowerCase()
+            .replace(/[^a-z0-9]+/g, '-')
+            .replace(/(^-|-$)/g, '') || 'article'
+    );
+
     const params = new URLSearchParams({
         title: article.title || '',
         description: article.description || '',
@@ -71,7 +78,7 @@ export default function NewsCard({
         content: (article as unknown as { content?: string }).content || ''
     });
 
-    const articleHref = `/article?${params.toString()}`;
+    const articleHref = `/news/${slug}?${params.toString()}`;
 
     return (
         <motion.div

@@ -2,11 +2,25 @@ import { getTopHeadlines } from '@/lib/newsApi';
 import HeroSection from '@/components/news/HeroSection';
 import NewsCard from '@/components/news/NewsCard';
 import InfiniteFeed from '@/components/news/InfiniteFeed';
+import TimeGreeting from '@/components/layout/TimeGreeting';
 import { Suspense } from 'react';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import dbConnect from '@/lib/db';
 import Bookmark from '@/models/Bookmark';
+
+interface BookmarkDoc {
+    articleUrl: string;
+}
+
+interface Article {
+    title: string;
+    description: string;
+    urlToImage: string;
+    source: { name: string };
+    publishedAt: string;
+    url: string;
+}
 
 export default async function NewsFeed({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
     const resolvedParams = await searchParams;
@@ -28,8 +42,8 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
                 if (isValidId) {
                     const bookmarks = await Bookmark.find({ userId: session.user.id })
                         .select('articleUrl')
-                        .lean();
-                    bookmarkedUrls = bookmarks.map(b => (b as any).articleUrl);
+                        .lean() as BookmarkDoc[];
+                    bookmarkedUrls = bookmarks.map(b => b.articleUrl);
                 } else {
                     console.warn("Invalid session user id format:", session.user.id);
                 }
@@ -43,6 +57,8 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
 
     return (
         <div className="space-y-12">
+            <TimeGreeting username={session?.user?.name || 'User'} />
+            
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold capitalize">{category === 'general' ? 'Top Stories' : category}</h1>
                 <span className="text-sm text-gray-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
@@ -86,7 +102,7 @@ async function CategoryRow({ category, bookmarkedUrls = [] }: { category: string
                 <a href={`/?category=${category.toLowerCase()}`} className="text-sm font-medium text-blue-600 dark:text-blue-400 hover:text-blue-700 dark:hover:text-blue-300 transition-colors">View All</a>
             </div>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                {articles.map((article: any, i: number) => (
+                {articles.map((article: Article, i: number) => (
                     <NewsCard
                         key={i}
                         article={article}

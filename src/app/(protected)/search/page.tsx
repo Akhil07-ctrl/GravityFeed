@@ -4,7 +4,6 @@ import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import NewsCard from '@/components/news/NewsCard';
 import { Loader2, SearchX } from 'lucide-react';
-import { getEverything } from '@/lib/newsApi';
 
 interface Article {
     title: string;
@@ -32,7 +31,9 @@ export default function SearchPage() {
 
         const fetchArticles = async () => {
             try {
-                const data = await getEverything(query);
+                const res = await fetch(`/api/search?q=${encodeURIComponent(query)}`);
+                if (!res.ok) throw new Error('Failed to fetch');
+                const data = await res.json();
                 if (isMounted) {
                     setArticles(data.articles || []);
                     setError('');
