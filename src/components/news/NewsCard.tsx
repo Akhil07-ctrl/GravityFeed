@@ -3,10 +3,11 @@
 import { motion } from 'framer-motion';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bookmark as BookmarkIcon } from 'lucide-react';
+import { Bookmark as BookmarkIcon, Share2 } from 'lucide-react';
 import { toggleBookmark } from '@/actions/bookmark.actions';
 import { useState, useEffect } from 'react';
 import { useToast } from '@/components/ui/Toast';
+import ShareMenu from './ShareMenu';
 
 interface Article {
     title: string;
@@ -105,12 +106,24 @@ export default function NewsCard({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
                 )}
 
-                <button
-                    onClick={handleBookmark}
-                    className="absolute top-2 right-2 z-10 p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors opacity-0 group-hover:opacity-100"
-                >
-                    <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
-                </button>
+                <div className="absolute top-2 right-2 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <button
+                        onClick={handleBookmark}
+                        className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors"
+                    >
+                        <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                    </button>
+                    <ShareMenu
+                        title={article.title}
+                        text={article.description}
+                        url={articleHref}
+                        trigger={
+                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors cursor-pointer">
+                                <Share2 className="w-4 h-4" />
+                            </div>
+                        }
+                    />
+                </div>
             </div>
 
             <div className={`p-4 relative z-10 pointer-events-none ${isLarge ? 'absolute bottom-0 left-0 right-0 text-white' : ''}`}>

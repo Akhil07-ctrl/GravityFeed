@@ -7,6 +7,7 @@ import Link from 'next/link';
 import Image from 'next/image';
 import { toggleBookmark } from '@/actions/bookmark.actions';
 import { useState } from 'react';
+import ShareMenu from '@/components/news/ShareMenu';
 
 export default function ArticlePage() {
     const searchParams = useSearchParams();
@@ -122,9 +123,11 @@ export default function ArticlePage() {
                                 {isBookmarked ? 'Saved' : 'Save Article'}
                             </button>
 
-                            <button className="flex items-center justify-center gap-2 px-6 py-3 bg-white border border-gray-200 rounded-xl font-medium hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700 transition-colors">
-                                <Share2 className="w-5 h-5" /> Share
-                            </button>
+                            <ShareMenu
+                                title={article.title}
+                                text={article.description}
+                                url={typeof window !== 'undefined' ? window.location.href : article.url}
+                            />
 
                             <div className="mt-8 border-t border-gray-200 dark:border-gray-800 pt-8">
                                 <h4 className="font-bold mb-4 text-sm uppercase text-gray-400">Published By</h4>

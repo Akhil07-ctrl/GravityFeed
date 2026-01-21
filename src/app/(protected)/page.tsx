@@ -58,10 +58,9 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
     return (
         <div className="space-y-12">
             <TimeGreeting username={session?.user?.name || 'User'} />
-            
+
             <div className="flex items-center justify-between mb-8">
                 <h1 className="text-3xl font-bold capitalize">{category === 'general' ? 'Top Stories' : category}</h1>
-                <span className="text-sm text-gray-500">{new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</span>
             </div>
 
             <Suspense fallback={<div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />}>

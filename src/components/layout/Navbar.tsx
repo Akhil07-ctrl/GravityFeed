@@ -75,7 +75,7 @@ export default function Navbar() {
         try {
             const data = await getEverything(query, 5);
             const articles = data.articles || [];
-            
+
             // Extract unique titles as suggestions
             const uniqueTitles = new Set<string>();
             const suggestionsList: SearchSuggestion[] = [];
@@ -135,7 +135,7 @@ export default function Navbar() {
         switch (e.key) {
             case 'ArrowDown':
                 e.preventDefault();
-                setSelectedSuggestionIndex(prev => 
+                setSelectedSuggestionIndex(prev =>
                     prev < suggestions.length - 1 ? prev + 1 : prev
                 );
                 break;
@@ -205,9 +205,13 @@ export default function Navbar() {
 
                 {/* Logo & Mobile Menu */}
                 <div className="flex items-center gap-4">
-                    <button 
-                        onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                        className="md:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
+                    <button
+                        onClick={() => {
+                            const newState = !isMobileMenuOpen;
+                            setIsMobileMenuOpen(newState);
+                            if (newState) setIsProfileOpen(false);
+                        }}
+                        className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
                         aria-label="Toggle menu"
                     >
                         {isMobileMenuOpen ? (
@@ -222,7 +226,7 @@ export default function Navbar() {
                 </div>
 
                 {/* Categories - Desktop */}
-                <div className="hidden md:flex items-center gap-6 overflow-x-auto no-scrollbar">
+                <div className="hidden lg:flex items-center gap-6 overflow-x-auto no-scrollbar">
                     {CATEGORIES.map((cat) => (
                         <Link
                             key={cat}
@@ -246,10 +250,25 @@ export default function Navbar() {
                                 onChange={handleSearchInputChange}
                                 onKeyDown={handleKeyDown}
                                 onFocus={() => searchQuery.length >= 2 && setShowSuggestions(true)}
-                                placeholder={SEARCH_PLACEHOLDERS[currentPlaceholderIndex]}
                                 className="pl-9 pr-10 py-2 text-sm bg-gray-100 dark:bg-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500 w-48 transition-all focus:w-64"
                                 autoComplete="off"
                             />
+                            {!searchQuery && (
+                                <div className="absolute left-9 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden h-5 right-10">
+                                    <AnimatePresence mode="wait">
+                                        <motion.span
+                                            key={currentPlaceholderIndex}
+                                            initial={{ y: 20, opacity: 0 }}
+                                            animate={{ y: 0, opacity: 1 }}
+                                            exit={{ y: -20, opacity: 0 }}
+                                            transition={{ duration: 0.5, ease: "easeInOut" }}
+                                            className="text-sm text-gray-400 absolute left-0 whitespace-nowrap"
+                                        >
+                                            {SEARCH_PLACEHOLDERS[currentPlaceholderIndex]}
+                                        </motion.span>
+                                    </AnimatePresence>
+                                </div>
+                            )}
                             {isLoadingSuggestions && (
                                 <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400 pointer-events-none" />
                             )}
@@ -274,11 +293,10 @@ export default function Navbar() {
                                                     setShowSuggestions(false);
                                                 }}
                                                 onMouseEnter={() => setSelectedSuggestionIndex(index)}
-                                                className={`w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-100 dark:border-gray-800 last:border-b-0 ${
-                                                    selectedSuggestionIndex === index
-                                                        ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                        : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                }`}
+                                                className={`w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-100 dark:border-gray-800 last:border-b-0 ${selectedSuggestionIndex === index
+                                                    ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                    : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                    }`}
                                             >
                                                 <div className="flex items-start gap-2">
                                                     <Search className="w-3 h-3 mt-1 flex-shrink-0" />
@@ -300,7 +318,11 @@ export default function Navbar() {
 
                     <div className="relative">
                         <button
-                            onClick={() => setIsProfileOpen(!isProfileOpen)}
+                            onClick={() => {
+                                const newState = !isProfileOpen;
+                                setIsProfileOpen(newState);
+                                if (newState) setIsMobileMenuOpen(false);
+                            }}
                             className="flex items-center gap-2 p-1 pl-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
                         >
                             <span className="text-sm font-medium hidden sm:block max-w-[100px] truncate">
@@ -351,7 +373,7 @@ export default function Navbar() {
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}
                         transition={{ duration: 0.3 }}
-                        className="md:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
+                        className="lg:hidden bg-white dark:bg-gray-900 border-t border-gray-200 dark:border-gray-800"
                     >
                         <div className="px-4 py-4 max-w-7xl mx-auto">
                             {/* Search in Mobile */}
@@ -364,10 +386,25 @@ export default function Navbar() {
                                             value={searchQuery}
                                             onChange={handleSearchInputChange}
                                             onKeyDown={handleKeyDown}
-                                            placeholder="Search news..."
                                             className="w-full pl-9 pr-10 py-2 text-sm bg-gray-100 dark:bg-gray-800 rounded-full focus:outline-none focus:ring-2 focus:ring-blue-500"
                                             autoComplete="off"
                                         />
+                                        {!searchQuery && (
+                                            <div className="absolute left-9 top-1/2 -translate-y-1/2 pointer-events-none overflow-hidden h-5 right-10">
+                                                <AnimatePresence mode="wait">
+                                                    <motion.span
+                                                        key={currentPlaceholderIndex}
+                                                        initial={{ y: 20, opacity: 0 }}
+                                                        animate={{ y: 0, opacity: 1 }}
+                                                        exit={{ y: -20, opacity: 0 }}
+                                                        transition={{ duration: 0.5, ease: "easeInOut" }}
+                                                        className="text-sm text-gray-400 absolute left-0 whitespace-nowrap"
+                                                    >
+                                                        {SEARCH_PLACEHOLDERS[currentPlaceholderIndex]}
+                                                    </motion.span>
+                                                </AnimatePresence>
+                                            </div>
+                                        )}
                                         {isLoadingSuggestions && (
                                             <Loader2 className="absolute right-3 top-1/2 -translate-y-1/2 w-4 h-4 animate-spin text-gray-400 pointer-events-none" />
                                         )}
@@ -393,11 +430,10 @@ export default function Navbar() {
                                                             setShowSuggestions(false);
                                                             handleMobileMenuItemClick();
                                                         }}
-                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-100 dark:border-gray-800 last:border-b-0 ${
-                                                            selectedSuggestionIndex === index
-                                                                ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
-                                                                : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
-                                                        }`}
+                                                        className={`w-full text-left px-4 py-3 text-sm transition-colors border-b border-gray-100 dark:border-gray-800 last:border-b-0 ${selectedSuggestionIndex === index
+                                                            ? 'bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400'
+                                                            : 'text-gray-700 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-800'
+                                                            }`}
                                                     >
                                                         <div className="flex items-start gap-2">
                                                             <Search className="w-3 h-3 mt-1 flex-shrink-0" />
