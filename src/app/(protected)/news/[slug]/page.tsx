@@ -24,6 +24,7 @@ export default function ArticlePage() {
     };
 
     const [isBookmarked, setIsBookmarked] = useState(false);
+    const [imageError, setImageError] = useState(false);
 
     const handleBookmark = async () => {
         const res = await toggleBookmark(article);
@@ -45,16 +46,18 @@ export default function ArticlePage() {
             >
                 <div className="relative h-[400px] md:h-[500px] w-full">
                     <Image
-                        src={article.urlToImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'}
+                        src={imageError || !article.urlToImage 
+                            ? 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'
+                            : article.urlToImage}
                         alt={article.title}
                         fill
                         priority
                         sizes="(max-width: 768px) 100vw, (max-width: 1200px) 80vw, 1200px"
                         className="object-cover"
-                        onError={(e) => {
-                            // @ts-expect-error - Image element type mismatch
-                            e.target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
+                        onError={() => {
+                            setImageError(true);
                         }}
+                        unoptimized={imageError}
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
 

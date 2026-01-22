@@ -94,11 +94,8 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
     }
 
     return (
-        <a
-            href="https://weather.com"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`block rounded-2xl p-6 text-white shadow-lg hover:scale-[1.02] transition-all relative overflow-hidden ${weather.isDay
+        <div
+            className={`block rounded-2xl p-6 text-white shadow-lg hover:scale-[1.02] transition-all relative overflow-hidden cursor-default ${weather.isDay
                     ? 'bg-gradient-to-br from-blue-400 to-blue-600'
                     : 'bg-gradient-to-br from-indigo-900 via-purple-900 to-slate-900'
                 } ${className}`}
@@ -115,6 +112,6 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
                 <span>Today</span>
                 <span className="flex items-center gap-1">Live <span className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse" /></span>
             </div>
-        </a>
+        </div>
     );
 }

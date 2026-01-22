@@ -3,6 +3,8 @@ import HeroSection from '@/components/news/HeroSection';
 import NewsCard from '@/components/news/NewsCard';
 import InfiniteFeed from '@/components/news/InfiniteFeed';
 import TimeGreeting from '@/components/layout/TimeGreeting';
+import CategoryTransition from '@/components/news/CategoryTransition';
+import CategoryTitle from '@/components/news/CategoryTitle';
 import { Suspense } from 'react';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
@@ -56,26 +58,26 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
     }
 
     return (
-        <div className="space-y-12">
+        <div>
             <TimeGreeting username={session?.user?.name || 'User'} />
 
-            <div className="flex items-center justify-between mb-8">
-                <h1 className="text-3xl font-bold capitalize">{category === 'general' ? 'Top Stories' : category}</h1>
-            </div>
+            <CategoryTransition category={category}>
+                <CategoryTitle category={category} />
 
-            <Suspense fallback={<div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />}>
-                <HeroSection articles={articles} bookmarkedUrls={bookmarkedUrls} />
-            </Suspense>
+                <Suspense fallback={<div className="h-96 bg-gray-100 dark:bg-gray-800 rounded-2xl animate-pulse" />}>
+                    <HeroSection articles={articles} bookmarkedUrls={bookmarkedUrls} />
+                </Suspense>
 
-            {/* Rows for specific categories if on home */}
-            {category === 'general' && (
-                <div className="space-y-12">
-                    {['Technology', 'Business', 'Sports', 'Entertainment'].map((cat) => (
-                        <CategoryRow key={cat} category={cat} bookmarkedUrls={bookmarkedUrls} />
-                    ))}
-                    <InfiniteFeed />
-                </div>
-            )}
+                {/* Rows for specific categories if on home */}
+                {category === 'general' && (
+                    <div className="space-y-12">
+                        {['Technology', 'Business', 'Sports', 'Entertainment'].map((cat) => (
+                            <CategoryRow key={cat} category={cat} bookmarkedUrls={bookmarkedUrls} />
+                        ))}
+                        <InfiniteFeed />
+                    </div>
+                )}
+            </CategoryTransition>
         </div>
     );
 }

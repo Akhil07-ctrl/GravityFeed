@@ -18,58 +18,70 @@ export default function InfiniteFeed() {
     const [page, setPage] = useState(2); // Start from page 2 as page 1 is often Hero
     const [loading, setLoading] = useState(false);
     const [hasMore, setHasMore] = useState(true);
-    const loaderRef = useRef(null);
+    const loaderRef = useRef<HTMLDivElement>(null);
+    const loadingRef = useRef(false);
+    const hasMoreRef = useRef(true);
+    const pageRef = useRef(2);
+
+    // Keep refs in sync with state
+    useEffect(() => {
+        loadingRef.current = loading;
+        hasMoreRef.current = hasMore;
+        pageRef.current = page;
+    }, [loading, hasMore, page]);
 
     const fetchMore = useCallback(async () => {
-        if (loading || !hasMore) return;
+        if (loadingRef.current || !hasMoreRef.current) return;
+        
+        loadingRef.current = true;
         setLoading(true);
 
         try {
-            // In a real app we'd fetch via API proxy
-            // Here we might just re-fetch same data purely for demo if no API key
-            // But let's assume API proxy is set up
-            // const res = await fetch(`/api/news?page=${page}`);
-            // Since I didn't fully implement page param in api route properly yet (I hardcoded it in GET), 
-            // I'll simulate it or just let it be static for demo if needed.
-            // But let's do it right:
-
-            // Update: I didn't update api/news/route.ts to take 'page' param effectively into getTopHeadlines arg.
-            // I should have. 
-            // I'll leave this as a "Load More Stories" section placeholder logic
-
             await new Promise(resolve => setTimeout(resolve, 1000)); // Fake delay
 
             // Mock data for infinite scroll demo since we might hit API limits quickly
+            const currentPage = pageRef.current;
             const newArticles: Article[] = Array(4).fill(null).map((_, i) => ({
-                title: `More News Story ${page}-${i}`,
+                title: `More News Story ${currentPage}-${i}`,
                 description: "This is a dynamically loaded story to demonstrate infinite scrolling capabilities.",
-                urlToImage: `https://picsum.photos/seed/${page}-${i}/400/300`,
+                urlToImage: `https://picsum.photos/seed/${currentPage}-${i}/400/300`,
                 source: { name: "Gravity Feed" },
                 publishedAt: new Date().toISOString(),
                 url: "#"
             }));
 
             setArticles(prev => [...prev, ...newArticles]);
-            setPage(prev => prev + 1);
+            setPage(prev => {
+                const nextPage = prev + 1;
+                pageRef.current = nextPage;
+                return nextPage;
+            });
         } catch {
+            hasMoreRef.current = false;
             setHasMore(false);
         } finally {
+            loadingRef.current = false;
             setLoading(false);
         }
-    }, [loading, hasMore, page]);
+    }, []); // Empty dependencies - using refs instead
 
     useEffect(() => {
+        const currentLoader = loaderRef.current;
+        if (!currentLoader) return;
+
         const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
+            if (entries[0].isIntersecting && !loadingRef.current && hasMoreRef.current) {
                 fetchMore();
             }
+        }, {
+            threshold: 0.1
         });
 
-        if (loaderRef.current) {
-            observer.observe(loaderRef.current);
-        }
+        observer.observe(currentLoader);
 
-        return () => observer.disconnect();
+        return () => {
+            observer.disconnect();
+        };
     }, [fetchMore]);
 
     return (

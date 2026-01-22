@@ -7,7 +7,9 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import { ArrowRight, Globe, Layers, Zap } from 'lucide-react';
 import { ThemeToggle } from '@/components/layout/ThemeToggle';
 import Footer from '@/components/layout/Footer';
+import AnimatedCounter from '@/components/ui/AnimatedCounter';
 import Link from 'next/link';
+import Image from 'next/image';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -44,9 +46,19 @@ export default function WelcomePage() {
         <>
             <nav className="sticky top-0 z-50 flex items-center justify-between px-6 py-6 bg-gray-50/95 dark:bg-black/95 backdrop-blur-md border-b border-gray-200 dark:border-gray-800">
                 <div className="max-w-7xl w-full mx-auto flex items-center justify-between">
-                    <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                        Gravity Feed
-                    </div>
+                    <Link href="/" className="flex items-center gap-3" aria-label="Gravity Feed">
+                        <Image
+                            src="/logo.svg"
+                            alt="Gravity Feed logo"
+                            width={32}
+                            height={32}
+                            className="shrink-0"
+                            priority
+                        />
+                        <span className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                            Gravity Feed
+                        </span>
+                    </Link>
                     <div className="flex items-center gap-4">
                         <ThemeToggle />
                         <Link
@@ -189,10 +201,19 @@ export default function WelcomePage() {
                                 { value: "1M+", label: "Articles Read" },
                                 { value: "50+", label: "Countries" }
                             ].map((stat, i) => (
-                                <div key={i} className="space-y-2">
-                                    <div className="text-5xl font-bold">{stat.value}</div>
+                                <motion.div
+                                    key={i}
+                                    className="space-y-2"
+                                    initial={{ opacity: 0, y: 20 }}
+                                    whileInView={{ opacity: 1, y: 0 }}
+                                    viewport={{ once: true, margin: "-100px" }}
+                                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                                >
+                                    <div className="text-5xl font-bold">
+                                        <AnimatedCounter value={stat.value} duration={2000} />
+                                    </div>
                                     <div className="text-blue-100 text-sm font-medium">{stat.label}</div>
-                                </div>
+                                </motion.div>
                             ))}
                         </div>
                     </div>

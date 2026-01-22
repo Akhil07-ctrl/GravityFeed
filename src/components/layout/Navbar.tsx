@@ -2,10 +2,10 @@
 
 import Link from 'next/link';
 import { useSession, signOut, signIn } from 'next-auth/react';
-import { Search, Bell, Menu, LogOut, User as UserIcon, X, Loader2 } from 'lucide-react';
+import { Search, Menu, LogOut, User as UserIcon, X, Loader2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter } from 'next/navigation';
+import { useRouter, usePathname } from 'next/navigation';
 import Image from 'next/image';
 
 import { CATEGORIES } from '@/utils/constants';
@@ -37,10 +37,15 @@ export default function Navbar() {
     const [selectedSuggestionIndex, setSelectedSuggestionIndex] = useState(-1);
     const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
     const router = useRouter();
+    const pathname = usePathname();
     const searchInputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
     const placeholderTimerRef = useRef<NodeJS.Timeout | null>(null);
+    const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
+    const mobileMenuRef = useRef<HTMLDivElement>(null);
+    const profileButtonRef = useRef<HTMLButtonElement>(null);
+    const profileDropdownRef = useRef<HTMLDivElement>(null);
 
     const handleSearch = (e: React.FormEvent | string) => {
         if (typeof e === 'string') {
@@ -182,6 +187,38 @@ export default function Navbar() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, []);
 
+    // Close mobile menu and profile dropdown when clicking outside
+    useEffect(() => {
+        const handleClickOutside = (event: MouseEvent) => {
+            const target = event.target as Node;
+
+            // Close mobile menu if clicking outside
+            if (
+                isMobileMenuOpen &&
+                mobileMenuButtonRef.current &&
+                mobileMenuRef.current &&
+                !mobileMenuButtonRef.current.contains(target) &&
+                !mobileMenuRef.current.contains(target)
+            ) {
+                setIsMobileMenuOpen(false);
+            }
+
+            // Close profile dropdown if clicking outside
+            if (
+                isProfileOpen &&
+                profileButtonRef.current &&
+                profileDropdownRef.current &&
+                !profileButtonRef.current.contains(target) &&
+                !profileDropdownRef.current.contains(target)
+            ) {
+                setIsProfileOpen(false);
+            }
+        };
+
+        document.addEventListener('mousedown', handleClickOutside);
+        return () => document.removeEventListener('mousedown', handleClickOutside);
+    }, [isMobileMenuOpen, isProfileOpen]);
+
     // Rotate search placeholder
     useEffect(() => {
         placeholderTimerRef.current = setInterval(() => {
@@ -206,6 +243,7 @@ export default function Navbar() {
                 {/* Logo & Mobile Menu */}
                 <div className="flex items-center gap-4">
                     <button
+                        ref={mobileMenuButtonRef}
                         onClick={() => {
                             const newState = !isMobileMenuOpen;
                             setIsMobileMenuOpen(newState);
@@ -220,8 +258,29 @@ export default function Navbar() {
                             <Menu className="w-5 h-5" />
                         )}
                     </button>
-                    <Link href="/" className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
-                        Gravity Feed
+                    <Link
+                        href="/"
+                        onClick={(e) => {
+                            if (pathname === '/') {
+                                e.preventDefault();
+                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                router.refresh();
+                            }
+                        }}
+                        className="flex items-center gap-2"
+                        aria-label="Gravity Feed"
+                    >
+                        <Image
+                            src="/logo.svg"
+                            alt="Gravity Feed logo"
+                            width={28}
+                            height={28}
+                            className="shrink-0"
+                            priority
+                        />
+                        <span className="text-xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600">
+                            Gravity Feed
+                        </span>
                     </Link>
                 </div>
 
@@ -312,12 +371,9 @@ export default function Navbar() {
 
                     <ThemeToggle />
 
-                    <button className="p-2 text-gray-600 hover:bg-gray-100 dark:text-gray-400 dark:hover:bg-gray-800 rounded-full">
-                        <Bell className="w-5 h-5" />
-                    </button>
-
                     <div className="relative">
                         <button
+                            ref={profileButtonRef}
                             onClick={() => {
                                 const newState = !isProfileOpen;
                                 setIsProfileOpen(newState);
@@ -340,6 +396,7 @@ export default function Navbar() {
                         <AnimatePresence>
                             {isProfileOpen && (
                                 <motion.div
+                                    ref={profileDropdownRef}
                                     initial={{ opacity: 0, y: 10, scale: 0.95 }}
                                     animate={{ opacity: 1, y: 0, scale: 1 }}
                                     exit={{ opacity: 0, y: 10, scale: 0.95 }}
@@ -369,6 +426,7 @@ export default function Navbar() {
             <AnimatePresence>
                 {isMobileMenuOpen && (
                     <motion.div
+                        ref={mobileMenuRef}
                         initial={{ opacity: 0, height: 0 }}
                         animate={{ opacity: 1, height: 'auto' }}
                         exit={{ opacity: 0, height: 0 }}

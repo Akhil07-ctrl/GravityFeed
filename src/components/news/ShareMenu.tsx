@@ -28,11 +28,16 @@ export default function ShareMenu({ title, text, url, className = '', trigger }:
         if (navigator.share) {
             try {
                 await navigator.share(shareData);
+                // Only show success if share was completed (not aborted)
                 showToast('Shared successfully', 'success');
+                setIsOpen(false);
             } catch (err) {
+                // Don't show error for user cancellation (AbortError)
                 if ((err as Error).name !== 'AbortError') {
                     console.error('Error sharing:', err);
+                    showToast('Failed to share', 'error');
                 }
+                // If user cancels, just close without showing any message
             }
         } else {
             setIsOpen(true);
@@ -135,7 +140,11 @@ export default function ShareMenu({ title, text, url, className = '', trigger }:
                                     href={platform.url}
                                     target="_blank"
                                     rel="noopener noreferrer"
-                                    onClick={() => setIsOpen(false)}
+                                    onClick={() => {
+                                        setIsOpen(false);
+                                        // Note: We can't detect if user actually shared via these links,
+                                        // so we don't show a success message
+                                    }}
                                     className={`flex flex-col items-center gap-2 p-3 rounded-xl transition-all ${platform.bg}`}
                                 >
                                     <div className={platform.color}>{platform.icon}</div>

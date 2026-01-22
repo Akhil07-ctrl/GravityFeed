@@ -6,6 +6,7 @@ import Link from 'next/link';
 import { Bookmark as BookmarkIcon, Share2 } from 'lucide-react';
 import { toggleBookmark } from '@/actions/bookmark.actions';
 import { useState, useEffect } from 'react';
+import { useRouter } from 'next/navigation';
 import { useToast } from '@/components/ui/Toast';
 import ShareMenu from './ShareMenu';
 
@@ -22,17 +23,21 @@ export default function NewsCard({
     article,
     size = 'medium',
     priority = false,
-    isBookmarkedInitially = false
+    isBookmarkedInitially = false,
+    onBookmarkToggle
 }: {
     article: Article;
     size?: 'small' | 'medium' | 'large';
     priority?: boolean;
     isBookmarkedInitially?: boolean;
+    onBookmarkToggle?: (isBookmarked: boolean) => void;
 }) {
+    const router = useRouter();
     const { showToast } = useToast();
     const isLarge = size === 'large';
     const isSmall = size === 'small';
     const [isBookmarked, setIsBookmarked] = useState(isBookmarkedInitially);
+    const [imageError, setImageError] = useState(false);
 
     // Sync state if prop changes (e.g. server re-fetch)
     useEffect(() => {
@@ -54,6 +59,8 @@ export default function NewsCard({
 
         if (res && res.isBookmarked !== undefined) {
             setIsBookmarked(res.isBookmarked);
+            if (onBookmarkToggle) onBookmarkToggle(res.isBookmarked);
+            router.refresh();
             showToast(
                 res.isBookmarked ? 'Added to Bookmarks' : 'Removed from Bookmarks',
                 'success'
@@ -91,16 +98,18 @@ export default function NewsCard({
 
             <div className={`relative ${isLarge ? 'h-2/3' : isSmall ? 'w-24 h-24 shrink-0' : 'h-48'}`}>
                 <Image
-                    src={article.urlToImage || 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'}
+                    src={imageError || !article.urlToImage 
+                        ? 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'
+                        : article.urlToImage}
                     alt={article.title}
                     fill
                     priority={priority}
                     sizes={isLarge ? '(max-width: 768px) 100vw, (max-width: 1200px) 66vw, 800px' : isSmall ? '100px' : '(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 400px'}
                     className={`object-cover transition-transform duration-700 group-hover:scale-110 ${!isSmall && 'rounded-t-2xl'}`}
-                    onError={(e) => {
-                        // @ts-expect-error - Image element type mismatch
-                        e.target.src = 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop';
+                    onError={() => {
+                        setImageError(true);
                     }}
+                    unoptimized={imageError}
                 />
                 {isLarge && (
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />

@@ -17,8 +17,19 @@ export const metadata: Metadata = {
   title: "Gravity Feed | Personalized News",
   description: "The world's pulse, personalized for you.",
   icons: {
-    icon: "data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='45' fill='%230099ff'/><circle cx='50' cy='50' r='35' fill='%23006bb3'/><path d='M30 50 Q50 30 70 50 Q50 70 30 50' fill='%00ccff'/></svg>",
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' },
+      { url: '/logo.svg', type: 'image/svg+xml', sizes: 'any' },
+    ],
+    apple: [
+      { url: '/logo.svg', type: 'image/svg+xml' },
+    ],
   },
+  manifest: '/site.webmanifest',
+  themeColor: [
+    { media: '(prefers-color-scheme: light)', color: '#2563eb' },
+    { media: '(prefers-color-scheme: dark)', color: '#1e1b4b' },
+  ],
 };
 
 export default function RootLayout({

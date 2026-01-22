@@ -48,15 +48,23 @@ export default function BookmarksPage() {
             ) : (
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {bookmarks.map((b) => (
-                        // Map bookmark data structure back to article structure expected by NewsCard
-                        <NewsCard key={b._id} article={{
-                            url: b.articleUrl,
-                            title: b.title,
-                            description: b.description,
-                            urlToImage: b.urlToImage,
-                            source: { name: b.source },
-                            publishedAt: b.publishedAt
-                        }} />
+                        <NewsCard
+                            key={b._id}
+                            article={{
+                                url: b.articleUrl,
+                                title: b.title,
+                                description: b.description,
+                                urlToImage: b.urlToImage,
+                                source: { name: b.source },
+                                publishedAt: b.publishedAt
+                            }}
+                            isBookmarkedInitially={true}
+                            onBookmarkToggle={(isBookmarked) => {
+                                if (!isBookmarked) {
+                                    setBookmarks(prev => prev.filter(item => item._id !== b._id));
+                                }
+                            }}
+                        />
                     ))}
                 </div>
             )}
