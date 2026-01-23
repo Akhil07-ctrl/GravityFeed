@@ -36,6 +36,15 @@ export default function NewsCard({
     const { showToast } = useToast();
     const isLarge = size === 'large';
     const isSmall = size === 'small';
+    
+    // Add touch detection for mobile devices
+    const [isTouchDevice, setIsTouchDevice] = useState(false);
+    
+    useEffect(() => {
+        // Check if the device supports touch events
+        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
+        setIsTouchDevice(isTouch);
+    }, []);
     const [isBookmarked, setIsBookmarked] = useState(isBookmarkedInitially);
     const [imageError, setImageError] = useState(false);
 
@@ -115,10 +124,11 @@ export default function NewsCard({
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
                 )}
 
-                <div className="absolute top-2 right-2 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2 right-2 z-10 flex flex-col gap-2 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button
                         onClick={handleBookmark}
                         className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors"
+                        aria-label={isBookmarked ? 'Remove from bookmarks' : 'Add to bookmarks'}
                     >
                         <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
                     </button>
