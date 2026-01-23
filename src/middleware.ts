@@ -35,7 +35,7 @@ export const config = {
          * - favicon.ico (favicon file)
          * - public images/assets
          */
-        '/((?!api|welcome|login|register|_next/static|_next/image|favicon.ico|public).*)',
+        '/((?!api|welcome|login|register|_next/static|_next/image|favicon.ico|site.webmanifest|.*\\.(?:svg|png|jpg|jpeg|gif|webp|ico)$).*)',
     ],
 }
 

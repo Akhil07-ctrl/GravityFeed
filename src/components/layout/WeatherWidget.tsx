@@ -24,7 +24,9 @@ export default function WeatherWidget({ className = '' }: WeatherWidgetProps) {
 
     useEffect(() => {
         if (typeof window === 'undefined' || !navigator.geolocation) {
-            setWeather(prev => ({ ...prev, loading: false }));
+            Promise.resolve().then(() => {
+                setWeather(prev => ({ ...prev, loading: false }));
+            });
             return;
         }
 

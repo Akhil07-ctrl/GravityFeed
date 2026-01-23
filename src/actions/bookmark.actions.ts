@@ -6,7 +6,16 @@ import dbConnect from "@/lib/db";
 import Bookmark from "@/models/Bookmark";
 import { revalidatePath } from "next/cache";
 
-export async function toggleBookmark(article: any) {
+interface Article {
+    url: string;
+    title: string;
+    description?: string;
+    urlToImage?: string;
+    source?: { name?: string };
+    publishedAt?: string;
+}
+
+export async function toggleBookmark(article: Article) {
     const session = await getServerSession(authOptions);
     if (!session?.user?.id) {
         return { error: "Unauthorized" };

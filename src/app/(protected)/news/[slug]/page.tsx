@@ -1,22 +1,25 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
+import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ExternalLink, Calendar, User, Share2, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toggleBookmark } from '@/actions/bookmark.actions';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import ShareMenu from '@/components/news/ShareMenu';
+import { useToast } from '@/components/ui/Toast';
 
 export default function ArticlePage() {
     const searchParams = useSearchParams();
+    const router = useRouter();
+    const { showToast } = useToast();
 
     // Reconstruct article object from params
     const article = {
         title: searchParams.get('title') || 'Article Title',
         description: searchParams.get('description') || 'No description available',
-        urlToImage: searchParams.get('image'),
+        urlToImage: searchParams.get('image') ?? undefined,
         source: { name: searchParams.get('source') || 'Unknown Source' },
         publishedAt: searchParams.get('date') || new Date().toISOString(),
         url: searchParams.get('url') || '#',
@@ -25,11 +28,45 @@ export default function ArticlePage() {
 
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [imageError, setImageError] = useState(false);
+    const [loading, setLoading] = useState(true);
+
+    // Check initial bookmark status
+    useEffect(() => {
+        const checkBookmarkStatus = async () => {
+            try {
+                const response = await fetch('/api/bookmarks');
+                if (response.ok) {
+                    const bookmarks = await response.json();
+                    const isBooked = Array.isArray(bookmarks) && bookmarks.some(
+                        (b: { articleUrl: string }) => b.articleUrl === article.url
+                    );
+                    setIsBookmarked(isBooked);
+                }
+            } catch (error) {
+                console.error('Error checking bookmark status:', error);
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        checkBookmarkStatus();
+    }, [article.url]);
 
     const handleBookmark = async () => {
         const res = await toggleBookmark(article);
+        
+        if (res && res.error) {
+            showToast(res.error, 'error');
+            return;
+        }
+
         if (res && res.isBookmarked !== undefined) {
             setIsBookmarked(res.isBookmarked);
+            router.refresh();
+            showToast(
+                res.isBookmarked ? 'Added to Bookmarks' : 'Removed from Bookmarks',
+                'success'
+            );
         }
     };
 
@@ -123,7 +160,7 @@ export default function ArticlePage() {
                                 className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl border font-medium transition-all ${isBookmarked ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800' : 'bg-white border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'}`}
                             >
                                 <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
-                                {isBookmarked ? 'Saved' : 'Save Article'}
+                                {isBookmarked ? 'Bookmarked' : 'Bookmark'}
                             </button>
 
                             <ShareMenu

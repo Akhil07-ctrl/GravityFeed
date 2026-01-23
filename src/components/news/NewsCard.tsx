@@ -90,13 +90,13 @@ export default function NewsCard({
 
     return (
         <motion.div
-            className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all block ${isLarge ? 'h-full min-h-[400px]' : isSmall ? 'h-24 flex gap-4' : 'h-full min-h-[300px]'
+            className={`group relative overflow-hidden rounded-2xl bg-white dark:bg-gray-900 border border-gray-200 dark:border-gray-800 shadow-sm hover:shadow-xl transition-all duration-300 block ${isLarge ? 'h-full min-h-[500px]' : isSmall ? 'h-24 flex gap-4' : 'h-full min-h-[380px]'
                 }`}
             whileHover={{ y: -4 }}
         >
             <Link href={articleHref} className="absolute inset-0 z-0" />
 
-            <div className={`relative ${isLarge ? 'h-2/3' : isSmall ? 'w-24 h-24 shrink-0' : 'h-48'}`}>
+            <div className={`relative ${isLarge ? 'h-[60%]' : isSmall ? 'w-24 h-24 shrink-0' : 'h-52'}`}>
                 <Image
                     src={imageError || !article.urlToImage 
                         ? 'https://images.unsplash.com/photo-1504711434969-e33886168f5c?q=80&w=1000&auto=format&fit=crop'
@@ -112,22 +112,23 @@ export default function NewsCard({
                     unoptimized={imageError}
                 />
                 {isLarge && (
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 pointer-events-none" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent pointer-events-none" />
                 )}
 
-                <div className="absolute top-2 right-2 z-10 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-3 right-3 z-10 flex flex-col gap-2 opacity-100 md:opacity-0 md:group-hover:opacity-100 transition-opacity">
                     <button
                         onClick={handleBookmark}
-                        className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors"
+                        className="p-2.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full text-gray-900 dark:text-white hover:bg-white dark:hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:scale-110"
+                        aria-label={isBookmarked ? 'Remove bookmark' : 'Add bookmark'}
                     >
-                        <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current' : ''}`} />
+                        <BookmarkIcon className={`w-4 h-4 ${isBookmarked ? 'fill-current text-blue-600 dark:text-blue-400' : ''}`} />
                     </button>
                     <ShareMenu
                         title={article.title}
                         text={article.description}
                         url={articleHref}
                         trigger={
-                            <div className="p-2 bg-white/20 backdrop-blur-md rounded-full text-white hover:bg-white/40 transition-colors cursor-pointer">
+                            <div className="p-2.5 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full text-gray-900 dark:text-white hover:bg-white dark:hover:bg-gray-800 transition-all shadow-lg hover:shadow-xl hover:scale-110 cursor-pointer">
                                 <Share2 className="w-4 h-4" />
                             </div>
                         }
@@ -135,18 +136,20 @@ export default function NewsCard({
                 </div>
             </div>
 
-            <div className={`p-4 relative z-10 pointer-events-none ${isLarge ? 'absolute bottom-0 left-0 right-0 text-white' : ''}`}>
-                <div className="flex items-center gap-2 mb-2 text-xs font-bold uppercase tracking-wider text-blue-600 dark:text-blue-400">
-                    <span>{article.source?.name}</span>
-                    <span className="text-gray-400">•</span>
-                    <span className="text-gray-400" suppressHydrationWarning>{new Date(article.publishedAt).toLocaleDateString()}</span>
+            <div className={`relative z-10 pointer-events-none ${isLarge ? 'absolute bottom-0 left-0 right-0 p-6 pb-8 text-white' : isSmall ? 'p-3 flex-1 flex flex-col justify-center' : 'p-5'}`}>
+                <div className={`flex items-center gap-2 mb-3 ${isLarge ? 'text-xs' : 'text-xs'} font-semibold uppercase tracking-wide ${isLarge ? 'text-white/90' : 'text-blue-600 dark:text-blue-400'}`}>
+                    <span className="truncate">{article.source?.name}</span>
+                    <span className={`${isLarge ? 'text-white/60' : 'text-gray-400'}`}>•</span>
+                    <span className={`${isLarge ? 'text-white/80' : 'text-gray-500 dark:text-gray-400'}`} suppressHydrationWarning>
+                        {new Date(article.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                    </span>
                 </div>
-                <h3 className={`font-bold leading-tight group-hover:text-blue-500 transition-colors ${isLarge ? 'text-2xl mb-2 text-white group-hover:text-blue-300' : isSmall ? 'text-sm' : 'text-lg mb-2'}`}>
+                <h3 className={`font-bold leading-tight group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors ${isLarge ? 'text-2xl md:text-3xl mb-3 text-white group-hover:text-blue-200 line-clamp-3' : isSmall ? 'text-sm line-clamp-2' : 'text-xl mb-3 line-clamp-2'}`}>
                     {article.title}
                 </h3>
                 {!isSmall && (
-                    <p className={`text-sm line-clamp-2 ${isLarge ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'}`}>
-                        {article.description}
+                    <p className={`leading-relaxed ${isLarge ? 'text-base text-white/90 line-clamp-4' : 'text-sm text-gray-600 dark:text-gray-300 line-clamp-3'}`}>
+                        {article.description || 'No description available.'}
                     </p>
                 )}
             </div>
