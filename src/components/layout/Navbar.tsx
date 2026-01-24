@@ -5,7 +5,7 @@ import { useSession, signOut, signIn } from 'next-auth/react';
 import { Search, Menu, LogOut, User as UserIcon, X, Loader2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { useRouter, usePathname } from 'next/navigation';
+import { useRouter, usePathname, useSearchParams } from 'next/navigation';
 import Image from 'next/image';
 
 import { CATEGORIES } from '@/utils/constants';
@@ -38,6 +38,13 @@ export default function Navbar() {
     const [currentPlaceholderIndex, setCurrentPlaceholderIndex] = useState(0);
     const router = useRouter();
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const categoryParam = searchParams.get('category');
+    
+    const activeCategory = pathname === '/' 
+        ? (categoryParam ? CATEGORIES.find(c => c.toLowerCase() === categoryParam) : 'Home')
+        : '';
+
     const searchInputRef = useRef<HTMLInputElement>(null);
     const suggestionsRef = useRef<HTMLDivElement>(null);
     const debounceTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -285,16 +292,29 @@ export default function Navbar() {
                 </div>
 
                 {/* Categories - Desktop */}
-                <div className="hidden lg:flex items-center gap-6 overflow-x-auto no-scrollbar">
-                    {CATEGORIES.map((cat) => (
-                        <Link
-                            key={cat}
-                            href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
-                            className="text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 transition-colors whitespace-nowrap"
-                        >
-                            {cat}
-                        </Link>
-                    ))}
+                <div className="hidden lg:flex items-center gap-6 overflow-x-auto no-scrollbar py-2">
+                    {CATEGORIES.map((cat) => {
+                        const isActive = activeCategory === cat;
+                        return (
+                            <Link
+                                key={cat}
+                                href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
+                                className={`relative text-sm font-medium transition-colors whitespace-nowrap px-1 py-1 ${isActive
+                                        ? 'text-blue-600 dark:text-blue-400'
+                                        : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+                                    }`}
+                            >
+                                {cat}
+                                {isActive && (
+                                    <motion.div
+                                        layoutId="activeCategory"
+                                        className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-600 dark:bg-blue-400"
+                                        transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                    />
+                                )}
+                            </Link>
+                        );
+                    })}
                 </div>
 
                 {/* Right Actions */}
@@ -508,16 +528,29 @@ export default function Navbar() {
                             {/* Categories in Mobile */}
                             <div className="space-y-2 mb-4 pb-4 border-b border-gray-200 dark:border-gray-800">
                                 <div className="text-xs font-bold text-gray-500 uppercase tracking-wider px-3 py-2">Categories</div>
-                                {CATEGORIES.map((cat) => (
-                                    <Link
-                                        key={cat}
-                                        href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
-                                        onClick={handleMobileMenuItemClick}
-                                        className="block px-3 py-2 text-sm font-medium text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg transition-colors"
-                                    >
-                                        {cat}
-                                    </Link>
-                                ))}
+                                {CATEGORIES.map((cat) => {
+                                    const isActive = activeCategory === cat;
+                                    return (
+                                        <Link
+                                            key={cat}
+                                            href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
+                                            onClick={handleMobileMenuItemClick}
+                                            className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors relative ${isActive
+                                                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                }`}
+                                        >
+                                            {cat}
+                                            {isActive && (
+                                                <motion.div
+                                                    layoutId="activeCategoryMobile"
+                                                    className="absolute left-0 top-1 bottom-1 w-1 bg-blue-600 dark:bg-blue-400 rounded-r-full"
+                                                    transition={{ type: "spring", stiffness: 380, damping: 30 }}
+                                                />
+                                            )}
+                                        </Link>
+                                    );
+                                })}
                             </div>
 
                             {/* Mobile Menu Actions */}

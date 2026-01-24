@@ -37,14 +37,7 @@ export default function NewsCard({
     const isLarge = size === 'large';
     const isSmall = size === 'small';
     
-    // Add touch detection for mobile devices
-    const [isTouchDevice, setIsTouchDevice] = useState(false);
-    
-    useEffect(() => {
-        // Check if the device supports touch events
-        const isTouch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-        setIsTouchDevice(isTouch);
-    }, []);
+
     const [isBookmarked, setIsBookmarked] = useState(isBookmarkedInitially);
     const [imageError, setImageError] = useState(false);
 
@@ -155,7 +148,7 @@ export default function NewsCard({
                     {article.title}
                 </h3>
                 {!isSmall && (
-                    <p className={`text-sm line-clamp-2 ${isLarge ? 'text-gray-200' : 'text-gray-500 dark:text-gray-400'}`}>
+                    <p className={`text-sm line-clamp-2 text-gray-500 dark:text-gray-400}`}>
                         {article.description}
                     </p>
                 )}
