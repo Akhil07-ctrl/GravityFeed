@@ -1,6 +1,5 @@
-const CACHE_NAME = 'gravity-feed-v1';
+const CACHE_NAME = 'gravity-feed-v3';
 const urlsToCache = [
-  '/',
   '/welcome',
   '/login',
   '/register',
@@ -11,6 +10,7 @@ const urlsToCache = [
 
 // Install event - cache essential files
 self.addEventListener('install', (event) => {
+  self.skipWaiting();
   event.waitUntil(
     caches.open(CACHE_NAME)
       .then((cache) => {
@@ -22,6 +22,13 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
+  if (event.request.method !== 'GET') return;
+
+  // Network-first strategy for navigation requests (HTML pages)
+  if (event.request.mode === 'navigate') {
+    return;
+  }
+
   event.respondWith(
     caches.match(event.request)
       .then((response) => {
@@ -36,7 +43,7 @@ self.addEventListener('fetch', (event) => {
         return fetch(fetchRequest).then(
           (response) => {
             // Check if valid response
-            if(!response || response.status !== 200 || response.type !== 'basic') {
+            if (!response || response.status !== 200 || response.type !== 'basic') {
               return response;
             }
 
