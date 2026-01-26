@@ -68,6 +68,11 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
                     <HeroSection articles={articles} bookmarkedUrls={bookmarkedUrls} />
                 </Suspense>
 
+                {/* Show more news for specific categories */}
+                {category !== 'general' && (
+                    <InfiniteFeed category={category} />
+                )}
+
                 {/* Rows for specific categories if on home */}
                 {category === 'general' && (
                     <div className="space-y-12">

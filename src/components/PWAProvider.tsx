@@ -16,6 +16,12 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
+  const [hasSeenPrompt, setHasSeenPrompt] = useState(() => {
+    if (typeof window !== 'undefined') {
+      return sessionStorage.getItem('hasSeenInstallPrompt') === 'true';
+    }
+    return false;
+  });
 
   useEffect(() => {
     // Register service worker
@@ -71,6 +77,8 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
     
     if (outcome === 'accepted') {
       setIsInstallable(false);
+      setHasSeenPrompt(true);
+      sessionStorage.setItem('hasSeenInstallPrompt', 'true');
     }
     
     setDeferredPrompt(null);
@@ -78,13 +86,15 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
 
   const handleDismiss = () => {
     setIsDismissed(true);
+    setHasSeenPrompt(true);
+    sessionStorage.setItem('hasSeenInstallPrompt', 'true');
     setDeferredPrompt(null);
   };
 
   return (
     <>
       {children}
-      {isInstallable && !isInstalled && !isDismissed && (
+      {isInstallable && !isInstalled && !isDismissed && !hasSeenPrompt && (
         <div className="fixed bottom-4 right-4 z-50 bg-blue-600 text-white p-4 rounded-lg shadow-lg max-w-sm">
           <div className="flex items-start justify-between">
             <div className="flex-1">

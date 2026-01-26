@@ -13,7 +13,7 @@ interface Article {
     url: string;
 }
 
-export default function InfiniteFeed() {
+export default function InfiniteFeed({ category }: { category?: string }) {
     const [articles, setArticles] = useState<Article[]>([]);
     const [page, setPage] = useState(2); // Start from page 2 as page 1 is often Hero
     const [loading, setLoading] = useState(false);
@@ -37,18 +37,22 @@ export default function InfiniteFeed() {
         setLoading(true);
 
         try {
-            await new Promise(resolve => setTimeout(resolve, 1000)); // Fake delay
-
-            // Mock data for infinite scroll demo since we might hit API limits quickly
             const currentPage = pageRef.current;
-            const newArticles: Article[] = Array(4).fill(null).map((_, i) => ({
-                title: `More News Story ${currentPage}-${i}`,
-                description: "This is a dynamically loaded story to demonstrate infinite scrolling capabilities.",
-                urlToImage: `https://picsum.photos/seed/${currentPage}-${i}/400/300`,
-                source: { name: "Gravity Feed" },
-                publishedAt: new Date().toISOString(),
-                url: "#"
-            }));
+            const categoryParam = category || 'general';
+            
+            const response = await fetch(`/api/news?category=${categoryParam}&page=${currentPage}`);
+            if (!response.ok) {
+                throw new Error('Failed to fetch news');
+            }
+            
+            const data = await response.json();
+            const newArticles = data.articles || [];
+
+            if (newArticles.length === 0) {
+                hasMoreRef.current = false;
+                setHasMore(false);
+                return;
+            }
 
             setArticles(prev => [...prev, ...newArticles]);
             setPage(prev => {
@@ -56,14 +60,15 @@ export default function InfiniteFeed() {
                 pageRef.current = nextPage;
                 return nextPage;
             });
-        } catch {
+        } catch (error) {
+            console.error('Failed to fetch more news:', error);
             hasMoreRef.current = false;
             setHasMore(false);
         } finally {
             loadingRef.current = false;
             setLoading(false);
         }
-    }, []); // Empty dependencies - using refs instead
+    }, [category]);
 
     useEffect(() => {
         const currentLoader = loaderRef.current;
@@ -88,11 +93,11 @@ export default function InfiniteFeed() {
         <section className="mt-12">
             <h2 className="text-2xl font-bold mb-6 flex items-center gap-2">
                 <span className="w-1 h-6 bg-purple-600 rounded-full" />
-                For You
+                {category ? `More ${category.charAt(0).toUpperCase() + category.slice(1)} News` : 'For You'}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 {articles.map((article, i) => (
-                    <NewsCard key={`${article.title}-${i}`} article={article} />
+                    <NewsCard key={`${article.url}-${i}`} article={article} />
                 ))}
             </div>
             <div ref={loaderRef} className="py-10 flex justify-center">

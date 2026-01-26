@@ -45,8 +45,8 @@ self.addEventListener('fetch', (event) => {
 
             caches.open(CACHE_NAME)
               .then((cache) => {
-                // Cache successful responses
-                if (event.request.url.startsWith('http')) {
+                // Cache successful responses - only GET requests are supported
+                if (event.request.url.startsWith('http') && event.request.method === 'GET') {
                   cache.put(event.request, responseToCache);
                 }
               });

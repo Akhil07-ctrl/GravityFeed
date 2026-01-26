@@ -3,6 +3,7 @@ import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { Providers } from "./providers";
 import { PWAProvider } from "@/components/PWAProvider";
+import CookieBanner from "@/components/layout/CookieBanner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -46,6 +47,7 @@ export default function RootLayout({
         <PWAProvider>
           <Providers>{children}</Providers>
         </PWAProvider>
+        <CookieBanner />
       </body>
     </html>
   );

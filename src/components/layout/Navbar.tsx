@@ -430,7 +430,15 @@ export default function Navbar() {
                                         <span className="w-4 h-4">🔖</span> Bookmarks
                                     </Link>
                                     <button
-                                        onClick={() => signOut({ callbackUrl: '/welcome' })}
+                                        onClick={async () => {
+                                            try {
+                                                await signOut({ callbackUrl: '/welcome' });
+                                            } catch (error) {
+                                                console.error('Sign out error:', error);
+                                                // Fallback redirect if signOut fails
+                                                window.location.href = '/welcome';
+                                            }
+                                        }}
                                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
                                         <LogOut className="w-4 h-4" /> Sign Out
@@ -555,7 +563,31 @@ export default function Navbar() {
 
                             {/* Mobile Menu Actions */}
                             <div className="space-y-2">
-                                {!session && (
+                                {session ? (
+                                    <>
+                                        <Link
+                                            href="/bookmarks"
+                                            onClick={handleMobileMenuItemClick}
+                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800"
+                                        >
+                                            <span className="w-4 h-4">🔖</span> Bookmarks
+                                        </Link>
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    await signOut({ callbackUrl: '/welcome' });
+                                                } catch (error) {
+                                                    console.error('Sign out error:', error);
+                                                    window.location.href = '/welcome';
+                                                }
+                                                handleMobileMenuItemClick();
+                                            }}
+                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
+                                        >
+                                            <LogOut className="w-4 h-4" /> Sign Out
+                                        </button>
+                                    </>
+                                ) : (
                                     <button
                                         onClick={() => {
                                             signIn();
