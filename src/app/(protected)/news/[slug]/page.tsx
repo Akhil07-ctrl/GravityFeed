@@ -2,11 +2,11 @@
 
 import { useSearchParams, useRouter } from 'next/navigation';
 import { motion } from 'framer-motion';
-import { ArrowLeft, ExternalLink, Calendar, User, Share2, Bookmark } from 'lucide-react';
+import { ArrowLeft, ExternalLink, Calendar, User, Bookmark } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
 import { toggleBookmark } from '@/actions/bookmark.actions';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import ShareMenu from '@/components/news/ShareMenu';
 import { useToast } from '@/components/ui/Toast';
 
@@ -16,7 +16,7 @@ export default function ArticlePage() {
     const { showToast } = useToast();
 
     // Reconstruct article object from params
-    const article = {
+    const article = useMemo(() => ({
         title: searchParams.get('title') || 'Article Title',
         description: searchParams.get('description') || 'No description available',
         urlToImage: searchParams.get('image') ?? undefined,
@@ -24,35 +24,35 @@ export default function ArticlePage() {
         publishedAt: searchParams.get('date') || new Date().toISOString(),
         url: searchParams.get('url') || '#',
         content: searchParams.get('content') || '',
-    };
+    }), [searchParams]);
 
     const [isBookmarked, setIsBookmarked] = useState(false);
     const [imageError, setImageError] = useState(false);
     const [loading, setLoading] = useState(true);
 
     // Check initial bookmark status
-    useEffect(() => {
-        const checkBookmarkStatus = async () => {
-            try {
-                const response = await fetch('/api/bookmarks');
-                if (response.ok) {
-                    const bookmarks = await response.json();
-                    const isBooked = Array.isArray(bookmarks) && bookmarks.some(
-                        (b: { articleUrl: string }) => b.articleUrl === article.url
-                    );
-                    setIsBookmarked(isBooked);
-                }
-            } catch (error) {
-                console.error('Error checking bookmark status:', error);
-            } finally {
-                setLoading(false);
+    const checkBookmarkStatus = useCallback(async () => {
+        try {
+            const response = await fetch('/api/bookmarks');
+            if (response.ok) {
+                const bookmarks = await response.json();
+                const isBooked = Array.isArray(bookmarks) && bookmarks.some(
+                    (b: { articleUrl: string }) => b.articleUrl === article.url
+                );
+                setIsBookmarked(isBooked);
             }
-        };
-
-        checkBookmarkStatus();
+        } catch (error) {
+            console.error('Error checking bookmark status:', error);
+        } finally {
+            setLoading(false);
+        }
     }, [article.url]);
 
-    const handleBookmark = async () => {
+    useEffect(() => {
+        checkBookmarkStatus();
+    }, [checkBookmarkStatus]);
+
+    const handleBookmark = useCallback(async () => {
         const res = await toggleBookmark(article);
         
         if (res && res.error) {
@@ -68,7 +68,7 @@ export default function ArticlePage() {
                 'success'
             );
         }
-    };
+    }, [article, showToast, router]);
 
     return (
         <div className="max-w-4xl mx-auto pb-20">
@@ -157,10 +157,11 @@ export default function ArticlePage() {
                         <div className="md:w-64 flex flex-col gap-4">
                             <button
                                 onClick={handleBookmark}
-                                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl border font-medium transition-all ${isBookmarked ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800' : 'bg-white border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'}`}
+                                disabled={loading}
+                                className={`flex items-center justify-center gap-2 px-6 py-3 rounded-xl border font-medium transition-all ${isBookmarked ? 'bg-blue-50 border-blue-200 text-blue-600 dark:bg-blue-900/20 dark:border-blue-800' : 'bg-white border-gray-200 hover:bg-gray-50 dark:bg-gray-800 dark:border-gray-700 dark:hover:bg-gray-700'} ${loading ? 'opacity-50 cursor-not-allowed' : ''}`}
                             >
                                 <Bookmark className={`w-5 h-5 ${isBookmarked ? 'fill-current' : ''}`} />
-                                {isBookmarked ? 'Bookmarked' : 'Bookmark'}
+                                {loading ? 'Loading...' : (isBookmarked ? 'Bookmarked' : 'Bookmark')}
                             </button>
 
                             <ShareMenu

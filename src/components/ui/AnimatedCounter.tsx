@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState, useRef } from 'react';
+import { useEffect, useState, useRef, useMemo } from 'react';
 
 interface AnimatedCounterProps {
     value: string; // e.g., "10K+", "500+", "1M+", "50+"
@@ -27,10 +27,10 @@ export default function AnimatedCounter({ value, duration = 2000, className = ''
         else if (suffix === 'M') actualNumber = num * 1000000;
         else if (suffix === 'B') actualNumber = num * 1000000000;
 
-        return { number: actualNumber, suffix, original: num };
+        return { number: actualNumber, suffix };
     };
 
-    const { number: targetNumber, suffix, original } = parseValue(value);
+    const { number: targetNumber, suffix } = useMemo(() => parseValue(value), [value]);
 
     useEffect(() => {
         const currentRef = counterRef.current;
@@ -84,7 +84,7 @@ export default function AnimatedCounter({ value, duration = 2000, className = ''
     }, [isVisible, targetNumber, duration]);
 
     // Format the display value
-    const formatDisplay = (num: number) => {
+    const formatDisplay = useMemo(() => (num: number) => {
         if (suffix === 'K') {
             const kValue = num / 1000;
             if (kValue >= 1) {
@@ -125,7 +125,7 @@ export default function AnimatedCounter({ value, duration = 2000, className = ''
         }
         // No suffix, just show the number
         return Math.floor(num).toString();
-    };
+    }, [suffix]);
 
     return (
         <div ref={counterRef} className={className}>
