@@ -39,10 +39,10 @@ export default function Footer() {
         // Check if it's an external link
         if (href.startsWith('http')) {
             window.open(href, '_blank', 'noopener,noreferrer');
-        } else if (href.startsWith('/careers') || href.startsWith('/app')) {
+        } else if (href.startsWith('/careers') || href.startsWith('/app') || href.startsWith('/rss')) {
             // Pages not yet implemented - show coming soon toast
             showToast(`${linkName} page is coming soon!`, 'info');
-        } else if (href.startsWith('/privacy-policy') || href.startsWith('/terms') || href.startsWith('/cookie-policy') || href.startsWith('/disclaimer') || href.startsWith('/sources') || href.startsWith('/rss') || href.startsWith('/about') || href.startsWith('/creator') || href.startsWith('/contact')) {
+        } else if (href.startsWith('/privacy-policy') || href.startsWith('/terms') || href.startsWith('/cookie-policy') || href.startsWith('/disclaimer') || href.startsWith('/sources') || href.startsWith('/about') || href.startsWith('/creator') || href.startsWith('/contact')) {
             // Legal pages, resource pages, and company pages - navigate directly
             router.push(href);
         } else if (href === '/' || href.startsWith('/?category=')) {
