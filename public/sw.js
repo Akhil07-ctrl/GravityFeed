@@ -22,7 +22,15 @@ self.addEventListener('install', (event) => {
 
 // Fetch event - serve from cache when offline
 self.addEventListener('fetch', (event) => {
-  if (event.request.method !== 'GET') return;
+  // Only handle GET requests
+  if (event.request.method !== 'GET') {
+    return;
+  }
+
+  // Skip chrome-extension and other non-http(s) schemes
+  if (!event.request.url.startsWith('http')) {
+    return;
+  }
 
   // Network-first strategy for navigation requests (HTML pages)
   if (event.request.mode === 'navigate') {
@@ -52,8 +60,8 @@ self.addEventListener('fetch', (event) => {
 
             caches.open(CACHE_NAME)
               .then((cache) => {
-                // Cache successful responses - only GET requests are supported
-                if (event.request.url.startsWith('http') && event.request.method === 'GET') {
+                // Double check it's still a GET request before caching
+                if (event.request.method === 'GET') {
                   cache.put(event.request, responseToCache);
                 }
               });

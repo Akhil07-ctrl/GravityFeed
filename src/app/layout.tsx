@@ -48,6 +48,21 @@ export default function RootLayout({
           <Providers>{children}</Providers>
         </PWAProvider>
         <CookieBanner />
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              // Fix preload links for CSS to include 'as' attribute
+              document.addEventListener('DOMContentLoaded', function() {
+                const preloadLinks = document.querySelectorAll('link[rel="preload"]:not([as])');
+                preloadLinks.forEach(link => {
+                  if (link.href.endsWith('.css')) {
+                    link.setAttribute('as', 'style');
+                  }
+                });
+              });
+            `,
+          }}
+        />
       </body>
     </html>
   );

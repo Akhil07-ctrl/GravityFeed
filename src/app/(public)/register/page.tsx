@@ -6,7 +6,6 @@ import { motion } from 'framer-motion';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { signIn } from 'next-auth/react';
-import bcrypt from 'bcryptjs';
 
 export default function RegisterPage() {
     const router = useRouter();
@@ -35,12 +34,10 @@ export default function RegisterPage() {
         }
 
         try {
-            const hashedPassword = await bcrypt.hash(password, 10);
-
             const res = await fetch('/api/auth/register', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ name, email, password: hashedPassword }),
+                body: JSON.stringify({ name, email, password }),
             });
 
             if (!res.ok) {
