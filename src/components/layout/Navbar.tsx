@@ -1,7 +1,7 @@
 'use client';
 
 import Link from 'next/link';
-import { useSession, signOut, signIn } from 'next-auth/react';
+import { useUser, useClerk } from '@clerk/nextjs';
 import { Search, Menu, LogOut, User as UserIcon, X, Loader2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -27,7 +27,8 @@ const SEARCH_PLACEHOLDERS = [
 ];
 
 export default function Navbar() {
-    const { data: session } = useSession();
+    const { user, isLoaded } = useUser();
+    const { signOut, openSignIn } = useClerk();
     const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
@@ -40,8 +41,8 @@ export default function Navbar() {
     const pathname = usePathname();
     const searchParams = useSearchParams();
     const categoryParam = searchParams.get('category');
-    
-    const activeCategory = pathname === '/' 
+
+    const activeCategory = pathname === '/'
         ? (categoryParam ? CATEGORIES.find(c => c.toLowerCase() === categoryParam) : 'Home')
         : '';
 
@@ -300,8 +301,8 @@ export default function Navbar() {
                                 key={cat}
                                 href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
                                 className={`relative text-sm font-medium transition-colors whitespace-nowrap px-1 py-1 ${isActive
-                                        ? 'text-blue-600 dark:text-blue-400'
-                                        : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
+                                    ? 'text-blue-600 dark:text-blue-400'
+                                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
                                     }`}
                             >
                                 {cat}
@@ -402,11 +403,11 @@ export default function Navbar() {
                             className="flex items-center gap-2 p-1 pl-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
                         >
                             <span className="text-sm font-medium hidden sm:block max-w-[100px] truncate">
-                                {session?.user?.name || 'User'}
+                                {user?.fullName || user?.firstName || 'User'}
                             </span>
                             <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 overflow-hidden flex items-center justify-center text-white text-xs">
-                                {session?.user?.image ? (
-                                    <Image src={session.user.image} alt="Avatar" width={32} height={32} className="w-full h-full object-cover" />
+                                {user?.imageUrl ? (
+                                    <Image src={user.imageUrl} alt="Avatar" width={32} height={32} className="w-full h-full object-cover" />
                                 ) : (
                                     <UserIcon className="w-4 h-4" />
                                 )}
@@ -423,21 +424,16 @@ export default function Navbar() {
                                     className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden p-2"
                                 >
                                     <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-2">
-                                        <p className="text-sm font-bold">{session?.user?.name}</p>
-                                        <p className="text-xs text-gray-500 truncate">{session?.user?.email}</p>
+                                        <p className="text-sm font-bold">{user?.fullName || user?.firstName}</p>
+                                        <p className="text-xs text-gray-500 truncate">{user?.primaryEmailAddress?.emailAddress}</p>
                                     </div>
                                     <Link href="/bookmarks" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
                                         <span className="w-4 h-4">🔖</span> Bookmarks
                                     </Link>
                                     <button
                                         onClick={async () => {
-                                            try {
-                                                await signOut({ callbackUrl: '/welcome' });
-                                            } catch (error) {
-                                                console.error('Sign out error:', error);
-                                                // Fallback redirect if signOut fails
-                                                window.location.href = '/welcome';
-                                            }
+                                            await signOut();
+                                            window.location.href = '/welcome';
                                         }}
                                         className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
                                     >
@@ -544,8 +540,8 @@ export default function Navbar() {
                                             href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
                                             onClick={handleMobileMenuItemClick}
                                             className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors relative ${isActive
-                                                    ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
-                                                    : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
+                                                ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
+                                                : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
                                                 }`}
                                         >
                                             {cat}
@@ -563,7 +559,7 @@ export default function Navbar() {
 
                             {/* Mobile Menu Actions */}
                             <div className="space-y-2">
-                                {session ? (
+                                {user ? (
                                     <>
                                         <Link
                                             href="/bookmarks"
@@ -574,12 +570,8 @@ export default function Navbar() {
                                         </Link>
                                         <button
                                             onClick={async () => {
-                                                try {
-                                                    await signOut({ callbackUrl: '/welcome' });
-                                                } catch (error) {
-                                                    console.error('Sign out error:', error);
-                                                    window.location.href = '/welcome';
-                                                }
+                                                await signOut();
+                                                window.location.href = '/welcome';
                                                 handleMobileMenuItemClick();
                                             }}
                                             className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
@@ -590,7 +582,7 @@ export default function Navbar() {
                                 ) : (
                                     <button
                                         onClick={() => {
-                                            signIn();
+                                            openSignIn();
                                             handleMobileMenuItemClick();
                                         }}
                                         className="w-full flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

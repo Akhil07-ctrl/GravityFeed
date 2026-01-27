@@ -1,6 +1,6 @@
 'use client';
 
-import { SessionProvider } from 'next-auth/react';
+import { ClerkProvider } from '@clerk/nextjs';
 import { ReactNode, useEffect } from 'react';
 import Lenis from 'lenis';
 import { ThemeProvider as NextThemesProvider } from 'next-themes';
@@ -24,12 +24,12 @@ export const Providers = ({ children }: { children: ReactNode }) => {
     }, []);
 
     return (
-        <SessionProvider>
+        <ClerkProvider>
             <NextThemesProvider attribute="class" defaultTheme="system" enableSystem>
                 <ToastProvider>
                     {children}
                 </ToastProvider>
             </NextThemesProvider>
-        </SessionProvider>
+        </ClerkProvider>
     );
 };

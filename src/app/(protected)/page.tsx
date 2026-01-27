@@ -6,8 +6,7 @@ import TimeGreeting from '@/components/layout/TimeGreeting';
 import CategoryTransition from '@/components/news/CategoryTransition';
 import CategoryTitle from '@/components/news/CategoryTitle';
 import { Suspense } from 'react';
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth, currentUser } from '@clerk/nextjs/server';
 import dbConnect from '@/lib/db';
 import Bookmark from '@/models/Bookmark';
 
@@ -27,7 +26,8 @@ interface Article {
 export default async function NewsFeed({ searchParams }: { searchParams: Promise<{ category?: string }> }) {
     const resolvedParams = await searchParams;
     const category = resolvedParams.category || 'general';
-    const session = await getServerSession(authOptions);
+    const { userId } = await auth();
+    const user = await currentUser();
 
     let articles = [];
     let bookmarkedUrls: string[] = [];
@@ -36,19 +36,13 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
         const data = await getTopHeadlines(category);
         articles = data.articles || [];
 
-        if (session?.user?.id) {
+        if (userId) {
             try {
                 await dbConnect();
-                // Ensure id is a valid ObjectId before querying
-                const isValidId = /^[0-9a-fA-F]{24}$/.test(session.user.id);
-                if (isValidId) {
-                    const bookmarks = await Bookmark.find({ userId: session.user.id })
-                        .select('articleUrl')
-                        .lean() as BookmarkDoc[];
-                    bookmarkedUrls = bookmarks.map(b => b.articleUrl);
-                } else {
-                    console.warn("Invalid session user id format:", session.user.id);
-                }
+                const bookmarks = await Bookmark.find({ userId })
+                    .select('articleUrl')
+                    .lean() as BookmarkDoc[];
+                bookmarkedUrls = bookmarks.map(b => b.articleUrl);
             } catch (err) {
                 console.error("Error fetching bookmarks:", err);
             }
@@ -59,7 +53,7 @@ export default async function NewsFeed({ searchParams }: { searchParams: Promise
 
     return (
         <div>
-            <TimeGreeting username={session?.user?.name || 'User'} />
+            <TimeGreeting username={user?.firstName || user?.fullName || 'User'} />
 
             <CategoryTransition category={category}>
                 <CategoryTitle category={category} />

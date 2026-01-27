@@ -1,7 +1,6 @@
 'use server';
 
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
+import { auth } from '@clerk/nextjs/server';
 import dbConnect from "@/lib/db";
 import Bookmark from "@/models/Bookmark";
 import { revalidatePath } from "next/cache";
@@ -16,8 +15,8 @@ interface Article {
 }
 
 export async function toggleBookmark(article: Article) {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const { userId } = await auth();
+    if (!userId) {
         return { error: "Unauthorized" };
     }
 
@@ -25,7 +24,7 @@ export async function toggleBookmark(article: Article) {
 
     try {
         const existing = await Bookmark.findOne({
-            userId: session.user.id,
+            userId,
             articleUrl: article.url,
         });
 
@@ -35,7 +34,7 @@ export async function toggleBookmark(article: Article) {
             return { isBookmarked: false };
         } else {
             await Bookmark.create({
-                userId: session.user.id,
+                userId,
                 articleUrl: article.url,
                 title: article.title,
                 description: article.description,

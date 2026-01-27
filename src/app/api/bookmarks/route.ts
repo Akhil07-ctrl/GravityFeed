@@ -1,24 +1,23 @@
-import { getServerSession } from 'next-auth';
-import { authOptions } from '@/lib/auth';
+import { auth } from '@clerk/nextjs/server';
 import dbConnect from '@/lib/db';
 import Bookmark from '@/models/Bookmark';
 import { NextResponse } from 'next/server';
 
 export async function GET() {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const { userId } = await auth();
+    if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
     await dbConnect();
-    const bookmarks = await Bookmark.find({ userId: session.user.id }).sort({ createdAt: -1 });
+    const bookmarks = await Bookmark.find({ userId }).sort({ createdAt: -1 });
 
     return NextResponse.json(bookmarks);
 }
 
 export async function POST(req: Request) {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const { userId } = await auth();
+    if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -33,7 +32,7 @@ export async function POST(req: Request) {
 
     try {
         const newBookmark = await Bookmark.create({
-            userId: session.user.id,
+            userId,
             articleUrl: article.url,
             title: article.title,
             description: article.description,
@@ -53,8 +52,8 @@ export async function POST(req: Request) {
 }
 
 export async function DELETE(req: Request) {
-    const session = await getServerSession(authOptions);
-    if (!session?.user?.id) {
+    const { userId } = await auth();
+    if (!userId) {
         return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
@@ -66,7 +65,7 @@ export async function DELETE(req: Request) {
     }
 
     await dbConnect();
-    await Bookmark.findOneAndDelete({ _id: id, userId: session.user.id });
+    await Bookmark.findOneAndDelete({ _id: id, userId });
 
     return NextResponse.json({ success: true });
 }

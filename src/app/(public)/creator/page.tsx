@@ -43,18 +43,18 @@ const techStack = [
 
 // Key skills
 const skills = [
-  'Full-Stack Development',
-  'UI/UX Design',
-  'RESTful API Integration',
-  'Database Design (MongoDB)',
-  'OAuth & Authentication',
-  'Responsive Web Design',
-  'Animation & Interactions',
-  'State Management',
+  'MERN Stack Development',
+  'MongoDB & Mongoose ODM',
+  'Express.js & Node.js',
+  'React.js & Next.js',
+  'TypeScript & ES6+',
+  'RESTful API Design',
+  'State Management (Redux/Context)',
+  'Authentication (JWT/OAuth)',
+  'Tailwind CSS & Responsive UI',
+  'Git & Version Control',
   'Performance Optimization',
   'SEO Best Practices',
-  'Dark Mode Implementation',
-  'Bookmarking System'
 ];
 
 // Project milestones

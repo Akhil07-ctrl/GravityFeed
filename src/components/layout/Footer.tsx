@@ -56,8 +56,9 @@ export default function Footer() {
 
     return (
         <footer className="bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 py-12 mt-auto">
-            <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-8">
-                <div className="xl:col-span-1">
+            <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
+                {/* Top Row: Logo & Description */}
+                <div className="max-w-md">
                     <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
                         Gravity Feed
                     </div>
@@ -66,23 +67,26 @@ export default function Footer() {
                     </p>
                 </div>
 
-                {Object.entries(footerLinks).map(([col, links]) => (
-                    <div key={col} className="xl:col-span-1">
-                        <h4 className="font-bold mb-4">{col}</h4>
-                        <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                            {links.map((link) => (
-                                <li key={link.name}>
-                                    <button
-                                        onClick={() => handleLinkClick(link.name, link.href)}
-                                        className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full"
-                                    >
-                                        {link.name}
-                                    </button>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-                ))}
+                {/* Bottom Row: Links Grid (2 in a row on desktop) */}
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
+                    {Object.entries(footerLinks).map(([col, links]) => (
+                        <div key={col}>
+                            <h4 className="font-bold mb-4">{col}</h4>
+                            <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                                {links.map((link) => (
+                                    <li key={link.name}>
+                                        <button
+                                            onClick={() => handleLinkClick(link.name, link.href)}
+                                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full"
+                                        >
+                                            {link.name}
+                                        </button>
+                                    </li>
+                                ))}
+                            </ul>
+                        </div>
+                    ))}
+                </div>
             </div>
             <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-400">
                 © {new Date().getFullYear()} Gravity Feed. All rights reserved.
