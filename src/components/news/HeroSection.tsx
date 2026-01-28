@@ -50,6 +50,7 @@ export default function HeroSection({
                         <NewsCard
                             article={article}
                             size="small"
+                            priority={true}
                             isBookmarkedInitially={bookmarkedUrls.includes(article.url)}
                         />
                     </motion.div>

@@ -33,7 +33,7 @@ const techStack = [
   { name: 'Tailwind CSS', category: 'Styling', icon: 'Palette' },
   { name: 'MongoDB', category: 'Database', icon: 'Database' },
   { name: 'Mongoose', category: 'ODM', icon: 'Database' },
-  { name: 'NextAuth.js', category: 'Authentication', icon: 'Lock' },
+  { name: 'Clerk', category: 'Authentication', icon: 'Lock' },
   { name: 'Framer Motion', category: 'Animations', icon: 'Code2' },
   { name: 'GSAP', category: 'Scroll Animations', icon: 'Code2' },
   { name: 'Lucide Icons', category: 'Icon Library', icon: 'Palette' },
@@ -43,14 +43,14 @@ const techStack = [
 
 // Key skills
 const skills = [
-  'MERN Stack Development',
-  'MongoDB & Mongoose ODM',
+  'MongoDB',
+  'MySQL',
   'Express.js & Node.js',
   'React.js & Next.js',
   'TypeScript & ES6+',
   'RESTful API Design',
-  'State Management (Redux/Context)',
-  'Authentication (JWT/OAuth)',
+  'PowerBI',
+  'Python',
   'Tailwind CSS & Responsive UI',
   'Git & Version Control',
   'Performance Optimization',
@@ -97,6 +97,7 @@ export default function AboutCreator() {
                         src={creator.profilePicture}
                         alt={creator.name}
                         fill
+                        sizes="(max-width: 768px) 128px, 160px"
                         className="object-cover"
                         priority
                       />
@@ -204,25 +205,29 @@ export default function AboutCreator() {
               Building Gravity Feed has been an incredible solo journey. Here's how it evolved from
               concept to reality:
             </p>
-            <div className="space-y-6">
+            <div className="space-y-0">
               {milestones.map((milestone, index) => (
-                <div key={index} className="flex gap-6">
-                  <div className="flex-shrink-0">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                <div key={index} className="relative flex gap-4 sm:gap-6 group">
+                  {/* Vertical line connector */}
+                  {index !== milestones.length - 1 && (
+                    <div className="absolute left-6 top-12 bottom-0 w-0.5 bg-gray-100 dark:bg-gray-800 -translate-x-1/2" />
+                  )}
+                  <div className="relative flex-shrink-0 z-10">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold shadow-lg shadow-blue-500/20 group-hover:scale-110 transition-transform">
                       {index + 1}
                     </div>
                   </div>
-                  <div className="flex-1">
-                    <div className="bg-gray-50 dark:bg-gray-800 rounded-lg p-6">
-                      <div className="flex justify-between items-start mb-2">
-                        <h3 className="text-xl font-semibold text-gray-900 dark:text-white">
+                  <div className="flex-1 pb-10">
+                    <div className="bg-gray-50 dark:bg-gray-800/50 rounded-2xl p-6 hover:shadow-md transition-all border border-transparent hover:border-blue-100 dark:hover:border-blue-900/30">
+                      <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 mb-3">
+                        <h3 className="text-xl font-bold text-gray-900 dark:text-white">
                           {milestone.title}
                         </h3>
-                        <span className="text-sm text-blue-600 dark:text-blue-400 font-medium">
+                        <span className="text-xs px-3 py-1 bg-blue-100/50 dark:bg-blue-900/30 text-blue-600 dark:text-blue-400 rounded-full font-bold uppercase tracking-wider w-fit">
                           {milestone.date}
                         </span>
                       </div>
-                      <p className="text-gray-600 dark:text-gray-400">{milestone.description}</p>
+                      <p className="text-gray-600 dark:text-gray-400 leading-relaxed">{milestone.description}</p>
                     </div>
                   </div>
                 </div>

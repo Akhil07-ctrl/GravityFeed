@@ -1,8 +1,8 @@
 'use client';
 
 import Link from 'next/link';
-import { useUser, useClerk } from '@clerk/nextjs';
-import { Search, Menu, LogOut, User as UserIcon, X, Loader2 } from 'lucide-react';
+import { useUser, useClerk, UserButton } from '@clerk/nextjs';
+import { Search, Menu, User as UserIcon, X, Loader2 } from 'lucide-react';
 import { useState, useEffect, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useRouter, usePathname, useSearchParams } from 'next/navigation';
@@ -29,7 +29,6 @@ const SEARCH_PLACEHOLDERS = [
 export default function Navbar() {
     const { user, isLoaded } = useUser();
     const { signOut, openSignIn } = useClerk();
-    const [isProfileOpen, setIsProfileOpen] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const [searchQuery, setSearchQuery] = useState('');
     const [suggestions, setSuggestions] = useState<SearchSuggestion[]>([]);
@@ -52,8 +51,6 @@ export default function Navbar() {
     const placeholderTimerRef = useRef<NodeJS.Timeout | null>(null);
     const mobileMenuButtonRef = useRef<HTMLButtonElement>(null);
     const mobileMenuRef = useRef<HTMLDivElement>(null);
-    const profileButtonRef = useRef<HTMLButtonElement>(null);
-    const profileDropdownRef = useRef<HTMLDivElement>(null);
 
     const handleSearch = (e: React.FormEvent | string) => {
         if (typeof e === 'string') {
@@ -210,22 +207,11 @@ export default function Navbar() {
             ) {
                 setIsMobileMenuOpen(false);
             }
-
-            // Close profile dropdown if clicking outside
-            if (
-                isProfileOpen &&
-                profileButtonRef.current &&
-                profileDropdownRef.current &&
-                !profileButtonRef.current.contains(target) &&
-                !profileDropdownRef.current.contains(target)
-            ) {
-                setIsProfileOpen(false);
-            }
         };
 
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
-    }, [isMobileMenuOpen, isProfileOpen]);
+    }, [isMobileMenuOpen]);
 
     // Rotate search placeholder
     useEffect(() => {
@@ -255,7 +241,6 @@ export default function Navbar() {
                         onClick={() => {
                             const newState = !isMobileMenuOpen;
                             setIsMobileMenuOpen(newState);
-                            if (newState) setIsProfileOpen(false);
                         }}
                         className="lg:hidden p-2 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-full transition-colors"
                         aria-label="Toggle menu"
@@ -300,6 +285,12 @@ export default function Navbar() {
                             <Link
                                 key={cat}
                                 href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
+                                onClick={(e) => {
+                                    if (!user) {
+                                        e.preventDefault();
+                                        openSignIn({ forceRedirectUrl: '/' });
+                                    }
+                                }}
                                 className={`relative text-sm font-medium transition-colors whitespace-nowrap px-1 py-1 ${isActive
                                     ? 'text-blue-600 dark:text-blue-400'
                                     : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400'
@@ -392,56 +383,8 @@ export default function Navbar() {
 
                     <ThemeToggle />
 
-                    <div className="relative">
-                        <button
-                            ref={profileButtonRef}
-                            onClick={() => {
-                                const newState = !isProfileOpen;
-                                setIsProfileOpen(newState);
-                                if (newState) setIsMobileMenuOpen(false);
-                            }}
-                            className="flex items-center gap-2 p-1 pl-2 rounded-full hover:bg-gray-100 dark:hover:bg-gray-800 border border-transparent hover:border-gray-200 dark:hover:border-gray-700 transition-all"
-                        >
-                            <span className="text-sm font-medium hidden sm:block max-w-[100px] truncate">
-                                {user?.fullName || user?.firstName || 'User'}
-                            </span>
-                            <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 overflow-hidden flex items-center justify-center text-white text-xs">
-                                {user?.imageUrl ? (
-                                    <Image src={user.imageUrl} alt="Avatar" width={32} height={32} className="w-full h-full object-cover" />
-                                ) : (
-                                    <UserIcon className="w-4 h-4" />
-                                )}
-                            </div>
-                        </button>
-
-                        <AnimatePresence>
-                            {isProfileOpen && (
-                                <motion.div
-                                    ref={profileDropdownRef}
-                                    initial={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    animate={{ opacity: 1, y: 0, scale: 1 }}
-                                    exit={{ opacity: 0, y: 10, scale: 0.95 }}
-                                    className="absolute right-0 top-full mt-2 w-56 bg-white dark:bg-gray-900 rounded-xl shadow-xl border border-gray-200 dark:border-gray-800 overflow-hidden p-2"
-                                >
-                                    <div className="px-3 py-2 border-b border-gray-100 dark:border-gray-800 mb-2">
-                                        <p className="text-sm font-bold">{user?.fullName || user?.firstName}</p>
-                                        <p className="text-xs text-gray-500 truncate">{user?.primaryEmailAddress?.emailAddress}</p>
-                                    </div>
-                                    <Link href="/bookmarks" className="flex items-center gap-2 px-3 py-2 text-sm rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800">
-                                        <span className="w-4 h-4">🔖</span> Bookmarks
-                                    </Link>
-                                    <button
-                                        onClick={async () => {
-                                            await signOut();
-                                            window.location.href = '/welcome';
-                                        }}
-                                        className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
-                                    >
-                                        <LogOut className="w-4 h-4" /> Sign Out
-                                    </button>
-                                </motion.div>
-                            )}
-                        </AnimatePresence>
+                    <div className="relative flex items-center">
+                        <UserButton afterSignOutUrl="/welcome" />
                     </div>
                 </div>
             </div>
@@ -538,7 +481,13 @@ export default function Navbar() {
                                         <Link
                                             key={cat}
                                             href={cat === 'Home' ? '/' : `/?category=${cat.toLowerCase()}`}
-                                            onClick={handleMobileMenuItemClick}
+                                            onClick={(e) => {
+                                                if (!user) {
+                                                    e.preventDefault();
+                                                    openSignIn({ forceRedirectUrl: '/' });
+                                                }
+                                                handleMobileMenuItemClick();
+                                            }}
                                             className={`block px-3 py-2 text-sm font-medium rounded-lg transition-colors relative ${isActive
                                                 ? 'text-blue-600 dark:text-blue-400 bg-blue-50 dark:bg-blue-900/20'
                                                 : 'text-gray-600 dark:text-gray-400 hover:text-blue-600 dark:hover:text-blue-400 hover:bg-gray-100 dark:hover:bg-gray-800'
@@ -568,21 +517,11 @@ export default function Navbar() {
                                         >
                                             <span className="w-4 h-4">🔖</span> Bookmarks
                                         </Link>
-                                        <button
-                                            onClick={async () => {
-                                                await signOut();
-                                                window.location.href = '/welcome';
-                                                handleMobileMenuItemClick();
-                                            }}
-                                            className="w-full flex items-center gap-2 px-3 py-2 text-sm text-red-500 rounded-lg hover:bg-red-50 dark:hover:bg-red-900/20"
-                                        >
-                                            <LogOut className="w-4 h-4" /> Sign Out
-                                        </button>
                                     </>
                                 ) : (
                                     <button
                                         onClick={() => {
-                                            openSignIn();
+                                            openSignIn({ forceRedirectUrl: '/' });
                                             handleMobileMenuItemClick();
                                         }}
                                         className="w-full flex items-center gap-2 px-3 py-2 text-sm bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"

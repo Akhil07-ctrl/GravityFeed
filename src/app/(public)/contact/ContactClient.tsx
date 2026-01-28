@@ -1,11 +1,16 @@
 'use client';
 
 import { Twitter, Linkedin, Facebook, Instagram, Mail, Clock, Wrench, Handshake, Newspaper, Zap } from 'lucide-react';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 
 export default function ContactClient() {
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+    const [currentDate, setCurrentDate] = useState('');
+
+    useEffect(() => {
+        setCurrentDate(new Date().toLocaleDateString());
+    }, []);
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
@@ -45,7 +50,7 @@ export default function ContactClient() {
                         Contact Us
                     </h1>
                     <p className="text-gray-600 dark:text-gray-400">
-                        Last updated: {new Date().toLocaleDateString()}
+                        Last updated: {currentDate}
                     </p>
                 </div>
 
@@ -220,7 +225,7 @@ export default function ContactClient() {
                                     ></textarea>
                                 </div>
 
-                                <div className="flex items-center space-x-4">
+                                <div className="flex flex-col justify-center items-center space-y-4">
                                     <button
                                         type="submit"
                                         disabled={isSubmitting}
@@ -237,36 +242,20 @@ export default function ContactClient() {
                     </section>
 
                     <section className="mb-12">
-                        <h2 className="text-2xl font-semibold mb-6">Office Locations</h2>
+                        <h2 className="text-2xl font-semibold mb-6">Office Location</h2>
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                             <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
                                 <h3 className="text-xl font-semibold mb-4">Headquarters</h3>
                                 <div className="space-y-2 text-gray-700 dark:text-gray-300">
                                     <p className="font-medium">Gravity Feed Inc.</p>
-                                    <p>1234 Market Street</p>
-                                    <p>Suite 500</p>
-                                    <p>San Francisco, CA 94102</p>
-                                    <p>United States</p>
+                                    <p>Flat - 305, SVS Heights</p>
+                                    <p>Ruby Block, Kompally</p>
+                                    <p>Hyderabad, Telangana - 500014</p>
+                                    <p>India</p>
                                 </div>
                                 <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
                                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Phone: +1 (415) 555-0123
-                                    </p>
-                                </div>
-                            </div>
-
-                            <div className="border border-gray-200 dark:border-gray-700 rounded-lg p-6">
-                                <h3 className="text-xl font-semibold mb-4">European Office</h3>
-                                <div className="space-y-2 text-gray-700 dark:text-gray-300">
-                                    <p className="font-medium">Gravity Feed UK Ltd.</p>
-                                    <p>10 Downing Street</p>
-                                    <p>Floor 3</p>
-                                    <p>London SW1A 2AA</p>
-                                    <p>United Kingdom</p>
-                                </div>
-                                <div className="mt-4 pt-4 border-t border-gray-200 dark:border-gray-600">
-                                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                                        Phone: +44 20 7123 4567
+                                        Phone: +91 9872669959
                                     </p>
                                 </div>
                             </div>

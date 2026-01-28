@@ -1,11 +1,15 @@
 'use client';
 
 import { useToast } from '@/components/ui/Toast';
-import { useRouter } from 'next/navigation';
+
+import { useUser, useClerk } from '@clerk/nextjs';
+import Link from 'next/link';
 
 export default function Footer() {
     const { showToast } = useToast();
-    const router = useRouter();
+
+    const { user } = useUser();
+    const { openSignIn } = useClerk();
 
     const footerLinks = {
         Company: [
@@ -35,30 +39,69 @@ export default function Footer() {
     };
 
 
-    const handleLinkClick = (linkName: string, href: string) => {
-        // Check if it's an external link
+    const renderLink = (linkLink: { name: string; href: string }) => {
+        const { name, href } = linkLink;
+
+        // External Links
         if (href.startsWith('http')) {
-            window.open(href, '_blank', 'noopener,noreferrer');
-        } else if (href.startsWith('/careers') || href.startsWith('/app') || href.startsWith('/rss')) {
-            // Pages not yet implemented - show coming soon toast
-            showToast(`${linkName} page is coming soon!`, 'info');
-        } else if (href.startsWith('/privacy-policy') || href.startsWith('/terms') || href.startsWith('/cookie-policy') || href.startsWith('/disclaimer') || href.startsWith('/sources') || href.startsWith('/about') || href.startsWith('/creator') || href.startsWith('/contact')) {
-            // Legal pages, resource pages, and company pages - navigate directly
-            router.push(href);
-        } else if (href === '/' || href.startsWith('/?category=')) {
-            // News links - navigate to news page with category
-            router.push(href);
-        } else {
-            // Other pages - show coming soon toast
-            showToast(`${linkName} page is coming soon!`, 'info');
+            return (
+                <a
+                    href={href}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full block"
+                >
+                    {name}
+                </a>
+            );
         }
+
+        // Coming SOon
+        if (href.startsWith('/careers') || href.startsWith('/app') || href.startsWith('/rss')) {
+            return (
+                <button
+                    onClick={() => showToast(`${name} page is coming soon!`, 'info')}
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full"
+                >
+                    {name}
+                </button>
+            );
+        }
+
+        // News Links (Protected)
+        if (href === '/' || href.startsWith('/?category=')) {
+            return (
+                <Link
+                    href={href}
+                    onClick={(e) => {
+                        if (!user) {
+                            e.preventDefault();
+                            openSignIn({ forceRedirectUrl: '/' });
+                        }
+                    }}
+                    className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full block"
+                >
+                    {name}
+                </Link>
+            );
+        }
+
+        // Standard Public Links
+        return (
+            <Link
+                href={href}
+                className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full block"
+            >
+                {name}
+            </Link>
+        );
     };
 
     return (
-        <footer className="bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 py-12 mt-auto">
-            <div className="max-w-7xl mx-auto px-6 flex flex-col gap-12">
-                {/* Top Row: Logo & Description */}
-                <div className="max-w-md">
+        <footer className="bg-white dark:bg-black border-t border-gray-200 dark:border-gray-800 py-12 mt-auto" suppressHydrationWarning>
+            <div className="max-w-7xl mx-auto px-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-12">
+                {/* Logo & Description */}
+                <div className="lg:col-span-1">
                     <div className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-purple-600 mb-4">
                         Gravity Feed
                     </div>
@@ -67,29 +110,22 @@ export default function Footer() {
                     </p>
                 </div>
 
-                {/* Bottom Row: Links Grid (2 in a row on desktop) */}
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-8">
-                    {Object.entries(footerLinks).map(([col, links]) => (
-                        <div key={col}>
-                            <h4 className="font-bold mb-4">{col}</h4>
-                            <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
-                                {links.map((link) => (
-                                    <li key={link.name}>
-                                        <button
-                                            onClick={() => handleLinkClick(link.name, link.href)}
-                                            className="hover:text-blue-600 dark:hover:text-blue-400 transition-colors text-left w-full"
-                                        >
-                                            {link.name}
-                                        </button>
-                                    </li>
-                                ))}
-                            </ul>
-                        </div>
-                    ))}
-                </div>
+                {/* Categories */}
+                {Object.entries(footerLinks).map(([col, links]) => (
+                    <div key={col}>
+                        <h4 className="font-bold mb-4">{col}</h4>
+                        <ul className="space-y-2 text-sm text-gray-500 dark:text-gray-400">
+                            {links.map((link) => (
+                                <li key={link.name}>
+                                    {renderLink(link)}
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                ))}
             </div>
             <div className="max-w-7xl mx-auto px-6 mt-12 pt-8 border-t border-gray-100 dark:border-gray-800 text-center text-sm text-gray-400">
-                © {new Date().getFullYear()} Gravity Feed. All rights reserved.
+                <p suppressHydrationWarning>© {new Date().getFullYear()} Gravity Feed. All rights reserved.</p>
             </div>
         </footer>
     );

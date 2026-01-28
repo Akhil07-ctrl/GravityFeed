@@ -21,6 +21,15 @@ const isPublicRoute = createRouteMatcher([
 export default clerkMiddleware(async (auth, request) => {
     const { userId } = await auth();
 
+    // Redirect authenticated users away from welcome/login/register to feed
+    if (userId && (
+        request.nextUrl.pathname === '/welcome' ||
+        request.nextUrl.pathname === '/login' ||
+        request.nextUrl.pathname === '/register'
+    )) {
+        return NextResponse.redirect(new URL('/', request.url));
+    }
+
     // Redirect unauthenticated users from root to welcome page
     if (request.nextUrl.pathname === '/' && !userId) {
         return NextResponse.redirect(new URL('/welcome', request.url));
@@ -32,21 +41,20 @@ export default clerkMiddleware(async (auth, request) => {
     }
 
     // Define CSP
-    const cspHeader = `
-        default-src 'self';
-        script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://clerk.com https://*.clerk.com https://challenges.cloudflare.com;
-        connect-src 'self' https://*.clerk.accounts.dev https://clerk.com https://*.clerk.com https://newsapi.org https://challenges.cloudflare.com;
-        img-src 'self' blob: data: https://*.clerk.com https://images.unsplash.com https://*.newsapi.org https://*.googleusercontent.com;
-        worker-src 'self' blob:;
-        style-src 'self' 'unsafe-inline';
-        font-src 'self' data:;
-        frame-src 'self' https://*.clerk.com https://challenges.cloudflare.com;
-        object-src 'none';
-        base-uri 'self';
-        form-action 'self';
-        frame-ancestors 'none';
-        upgrade-insecure-requests;
-    `.replace(/\s{2,}/g, ' ').trim();
+    const cspHeader = [
+        "default-src 'self'",
+        "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://*.clerk.accounts.dev https://clerk.com https://*.clerk.com https://challenges.cloudflare.com",
+        "connect-src 'self' https://*.clerk.accounts.dev https://clerk.com https://*.clerk.com https://newsapi.org https://challenges.cloudflare.com https://formspree.io https://api.open-meteo.com https://clerk-telemetry.com https://nominatim.openstreetmap.org",
+        "img-src 'self' blob: data: https://*.clerk.com https://images.unsplash.com https://*.newsapi.org https://*.googleusercontent.com",
+        "worker-src 'self' blob:",
+        "style-src 'self' 'unsafe-inline'",
+        "font-src 'self' data:",
+        "frame-src 'self' https://*.clerk.com https://challenges.cloudflare.com",
+        "object-src 'none'",
+        "base-uri 'self'",
+        "form-action 'self'",
+        "frame-ancestors 'none'"
+    ].join('; ');
 
     const response = NextResponse.next();
     response.headers.set('Content-Security-Policy', cspHeader);

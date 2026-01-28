@@ -16,14 +16,13 @@ export function PWAProvider({ children }: { children: React.ReactNode }) {
   const [isInstallable, setIsInstallable] = useState(false);
   const [isInstalled, setIsInstalled] = useState(false);
   const [isDismissed, setIsDismissed] = useState(false);
-  const [hasSeenPrompt, setHasSeenPrompt] = useState(() => {
-    if (typeof window !== 'undefined') {
-      return sessionStorage.getItem('hasSeenInstallPrompt') === 'true';
-    }
-    return false;
-  });
+  const [hasSeenPrompt, setHasSeenPrompt] = useState(false);
 
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      setHasSeenPrompt(sessionStorage.getItem('hasSeenInstallPrompt') === 'true');
+    }
+
     // Register service worker
     if ('serviceWorker' in navigator) {
       window.addEventListener('load', () => {

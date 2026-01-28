@@ -27,7 +27,8 @@ export default function RegisterPage() {
 
                 <div className="flex justify-center">
                     <SignUp
-                        routing="hash"
+                        routing="path"
+                        path="/register"
                         forceRedirectUrl="/"
                         appearance={{
                             elements: {
